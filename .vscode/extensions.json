@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "tamasfe.even-better-toml",
-        "twxs.cmake"
+        "twxs.cmake",
+        "ms-vscode.cpptools",
+        "xaver.clang-format"
     ]
 }
