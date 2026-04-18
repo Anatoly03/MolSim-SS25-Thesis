@@ -33,8 +33,11 @@ then
         exit 1
     fi
 else
-    cmake --version
+    cmake --version | head -n 1
 fi
+
+# TODO: install gcc, clang, etc.
+# TODO: remember macbook uses g++ and `xcode-select``
 
 # TODO: doxygen
 
