@@ -1,6 +1,6 @@
 # MolSim Thesis
 
-<p><center><a href="https://anatoly03.github.io/MolSim-SS25-Thesis/main/index.html">Rust Documentation</a></center></p>
+<center><a href="https://anatoly03.github.io/MolSim-SS25-Thesis/main/index.html">Rust Documentation</a></center>
 
 This project implements molecular dynamics simulations in C++ and Rust. The goal of this workspace is to compare C++ and Rust.
 
