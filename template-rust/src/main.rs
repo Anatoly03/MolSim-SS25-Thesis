@@ -1,22 +1,25 @@
-//! Welcome to the Molecular Dynamics Rust Edition teaching code. If
+//! Welcome to the Molecular Dynamics teaching code (Rust Edition). If
 //! you are rather new to Rust, you might want to check the following
 //! resources:
-//! 
+//!
 //! - [The Rust Book](https://doc.rust-lang.org/book/)
 //! - [The Rust Reference](https://doc.rust-lang.org/reference/)
 //! - [What is RustDoc?](https://doc.rust-lang.org/rustdoc/what-is-rustdoc.html)
-//! 
 
+mod file_reader;
+mod output_writer;
 mod particle;
 
-use particle::Particle;
+use crate::file_reader::FileReader;
+use crate::output_writer::{OutputWriter, XYZWriter};
+use crate::particle::Particle;
 
 const START_TIME: f64 = 0.0;
 const END_TIME: f64 = 1000.0;
 const DELTA_T: f64 = 0.014;
 
 // This is the entry point of the Rust application.
-pub fn main() {
+pub fn main() -> std::io::Result<()> {
     println!("Hello from MolSim for PSE!");
 
     if std::env::args().len() != 2 {
@@ -27,7 +30,7 @@ pub fn main() {
     // TODO: what data structure to pick?
     let mut particles: Vec<Particle> = Vec::new();
 
-    // TODO implement file reading
+    FileReader::read_file(&mut particles, std::env::args().nth(1).unwrap().as_str())?;
 
     let mut current_time = START_TIME;
     let mut iteration = 0;
@@ -42,7 +45,7 @@ pub fn main() {
 
         iteration += 1;
         if iteration % 10 == 0 {
-            plot_particles(iteration);
+            plot_particles(&mut particles, iteration);
         }
         println!("Iteration {iteration} finished.");
 
@@ -50,6 +53,7 @@ pub fn main() {
     }
 
     println!("output written. Terminating...");
+    Ok(())
 }
 
 /// calculate the force for all particles
@@ -78,11 +82,13 @@ fn calculate_v(particles: &mut Vec<Particle>) {
     }
 }
 
-fn plot_particles(iteration: i32) {
+fn plot_particles(particles: &mut Vec<Particle>, iteration: usize) {
     let out_name = String::from("MD_vtk");
+
+    let mut writer = XYZWriter;
+    writer.plot_particles(particles, &out_name, iteration);
 
     // // Assuming outputWriter::XYZWriter is defined elsewhere
     // let writer = outputWriter::XYZWriter::new();
     // writer.plotParticles(&particles, &out_name, iteration);
 }
-
