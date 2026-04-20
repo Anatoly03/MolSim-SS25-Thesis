@@ -1,0 +1,1 @@
+- [x] Rust Template

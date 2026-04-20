@@ -1,4 +1,2 @@
-# Rust generated files
 target/
-Cargo.lock
 doc
