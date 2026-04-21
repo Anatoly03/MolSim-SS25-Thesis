@@ -1,4 +1,5 @@
 - [x] Rust Template
+- [x] CLI Argument Parser
 - [ ] As we discussed in the meeting, the basic algorithm of the molecular dynamics
 simulation consists of the following steps:
   - [ ] Force calculation

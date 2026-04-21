@@ -196,6 +196,28 @@ match file.open("hello.txt") {
     If a program encounters an \blue{unrecoverable error}, you \blue{panic}. This is equivalent to throwing an error which unwinds back to the main function, only calling destructor logic on the way.
 \end{frame}
 
+\simpleframe\begin{frame}[fragile]{Rust Frame Program}
+    % TODO cite: https://docs.rs/clap/latest/clap/
+
+    \begin{itemize}
+        \item Typically done with \blue{clap}
+        \item Utilizes macros to generate code for parsing command line arguments (You do not implement the \texttt{getopt} loop yourself!)
+    \end{itemize}
+    \vspace{1em}
+
+    \begin{lstlisting}[aboveskip=0pt,belowskip=0pt,breaklines=false]
+/// Documentation comments become `printHelp' equivalent.
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Documentation for arguments works also!
+    #[arg(short, long, default_value_t = "path/to/out.txt")]
+    output: String, // or use `PathBuf' directly
+}
+    \end{lstlisting}
+
+\end{frame}
+
 \simpleframe\begin{frame}{Ferris will answer questions}
     \centering
     % image from:
