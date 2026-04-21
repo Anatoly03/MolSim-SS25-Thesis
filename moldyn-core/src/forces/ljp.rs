@@ -12,7 +12,11 @@ pub struct LennardJonesForce {
 }
 
 impl Force for LennardJonesForce {
+    fn system_name(&self) -> &str {
+        "lennardjones"
+    }
+    
     fn force(&self, particle: &Particle, other: &Particle) -> Vec3 {
-        todo!()
+        todo!("lennard jones force not implemented")
     }
 }

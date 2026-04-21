@@ -1,5 +1,10 @@
 - [x] Rust Template
 - [x] CLI Argument Parser
+- [x] Input File Parser
+  - [x] YAMl Support
+  - [ ] JSON Support
+- [ ] Output File Writer
+
 - [ ] As we discussed in the meeting, the basic algorithm of the molecular dynamics
 simulation consists of the following steps:
   - [ ] Force calculation
@@ -27,8 +32,6 @@ simulation consists of the following steps:
 - [ ] The user should be able to select the log level either via any form of input or through CMake. Having to edit any source file to change the log level is not acceptable.
 
 - [ ] TODO: include worksheet 2 task 4
-
-- [ ] YAML input
 
 - [ ] TODO: include worksheet 3
 

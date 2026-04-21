@@ -3,6 +3,7 @@
 
 mod forces;
 mod particle;
+mod reader;
 mod vec3;
 
 use clap::Parser;
@@ -10,6 +11,8 @@ pub use forces::{Force, LennardJonesForce, NewtonForce};
 pub use particle::Particle;
 use std::path::PathBuf;
 pub use vec3::Vec3;
+
+use crate::reader::FileDefinition;
 
 /// Molecular Dynamics Thesis Code. This library implements a simple
 /// engine to simulate molecular dynamics.
@@ -32,9 +35,22 @@ struct Args {
 /// The main entry point for the moldyn-core library.
 fn main() {
     let args = Args::parse();
+    
+    // read the input file and parse it into [FileDefinition]
+    let input = match FileDefinition::try_from(args.input) {
+        Ok(def) => def,
+        Err(e) => {
+            eprintln!("Error reading input file: {}", e);
+            std::process::exit(1);
+        }
+    };
 
-    println!("Input file: {:?}", args.input);
-    println!("Output file: {:?}", args.output);
+    println!("Simulation name: {}", input.name);
+
+    // this is supposed to panic and confirm that force deserialization is working
+    let mut p1 = Particle::default();
+    let mut p2 = Particle::default();
+    input.force.apply_force(&mut p1, &mut p2);
 
     println!("Hello, world!");
 }

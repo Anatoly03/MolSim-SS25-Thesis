@@ -9,7 +9,11 @@ use crate::{Particle, Vec3, forces::Force};
 pub struct NewtonForce;
 
 impl Force for NewtonForce {
+    fn system_name(&self) -> &str {
+        "newton"
+    }
+
     fn force(&self, particle: &Particle, other: &Particle) -> Vec3 {
-        todo!()
+        todo!("newton force not implemented")
     }
 }
