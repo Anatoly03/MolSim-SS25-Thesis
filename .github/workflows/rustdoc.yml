@@ -32,11 +32,13 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Generate Documentation
-        run: rustdoc moldyn-core/src/main.rs
+        # run: rustdoc moldyn-core/src/main.rs
+        # dependencies not linked, so use `cargo doc` instead
+        run: cargo doc
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'doc'
+          path: target/doc
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
