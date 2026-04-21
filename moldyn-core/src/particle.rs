@@ -8,15 +8,15 @@ use crate::Vec3;
 pub struct Particle {
     /// Position of the particle in 3D space.
     #[serde(default)]
-    pub position: Vec3,
+    position: Vec3,
 
     /// Velocity of the particle in 3D space.
     #[serde(default)]
-    pub velocity: Vec3,
+    velocity: Vec3,
 
     /// Force effective on the particle in 3D space.
     #[serde(default, skip_deserializing)]
-    pub force: Vec3,
+    force: Vec3,
 
     /// Force which was effective on the particle in the previous time step.
     #[serde(default, skip_deserializing)]
@@ -24,14 +24,37 @@ pub struct Particle {
 
     /// Mass of the particle.
     #[serde(default)]
-    pub mass: f64,
+    mass: f64,
 }
 
 impl Particle {
-    /// Propagates the current force to the old force. This is used in velocity
-    /// calculations which depend on the previous time step's force.
-    pub fn push_force(&mut self, force: Vec3) {
+    /// Propagates the current force to the old force. This has to be called
+    /// every time step before invoking [Particle::apply_force] to apply new
+    /// forces.
+    pub fn delay_force(&mut self) {
         self.old_force = self.force;
-        self.force = force;
+        self.force = Vec3::zero();
+    }
+
+    /// Applies the given force to the particle (addition). It assumes that the
+    /// force was reset with [Particle::delay_force] in a timestep.
+    pub fn apply_force(&mut self, force: Vec3) {
+        self.force += force;
+    }
+
+    /// Calculate the updated position of the particle given a delta time step.
+    /// This functionality is constant across different simulation algorithms,
+    /// so it is implemented here.
+    pub fn update_position(&mut self, delta_time: f64) {
+        // C++ code: particle.position += dt * particle.velocity + std::pow(dt, 2) * particle.force / (2 * particle.mass);
+        todo!("rewrite it in rust");
+    }
+
+    /// Calculate the updated velocity of the particle given a delta time step.
+    /// This functionality is constant across different simulation algorithms,
+    /// so it is implemented here.
+    pub fn update_velocity(&mut self, delta_time: f64) {
+        // C++ code: particle.velocity += dt * ((particle.force + particle.old_force) / (2 * particle.mass));
+        todo!("rewrite it in rust");
     }
 }

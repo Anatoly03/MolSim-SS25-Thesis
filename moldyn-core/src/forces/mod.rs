@@ -18,8 +18,8 @@ pub trait Force {
     /// to the `force` field of each particle forming an attraction or repulsion.
     fn apply_force(&self, particle: &mut Particle, other: &mut Particle) {
         let force = self.force(particle, other);
-        particle.force += force;
-        other.force -= force;
+        particle.apply_force(force);
+        other.apply_force(-force);
     }
 }
 

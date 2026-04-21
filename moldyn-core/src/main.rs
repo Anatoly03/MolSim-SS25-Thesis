@@ -4,6 +4,7 @@
 mod forces;
 mod particle;
 mod reader;
+mod simulation;
 mod vec3;
 
 use clap::Parser;
@@ -35,7 +36,7 @@ struct Args {
 /// The main entry point for the moldyn-core library.
 fn main() {
     let args = Args::parse();
-    
+
     // read the input file and parse it into [FileDefinition]
     let input = match FileDefinition::try_from(args.input) {
         Ok(def) => def,
