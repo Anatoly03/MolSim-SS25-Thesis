@@ -28,6 +28,11 @@ pub struct Particle {
 }
 
 impl Particle {
+    /// Returns the current force of the particle.
+    pub fn get_force(&self) -> Vec3 {
+        self.force
+    }
+
     /// Propagates the current force to the old force. This has to be called
     /// every time step before invoking [Particle::apply_force] to apply new
     /// forces.
@@ -42,6 +47,11 @@ impl Particle {
         self.force += force;
     }
 
+    /// Returns the current position of the particle.
+    pub fn get_position(&self) -> Vec3 {
+        self.position
+    }
+
     /// Calculate the updated position of the particle given a delta time step.
     /// This functionality is constant across different simulation algorithms,
     /// so it is implemented here.
@@ -49,11 +59,21 @@ impl Particle {
         self.position += self.velocity * delta_time + self.force * (delta_time.powi(2) / (2.0 * self.mass));
     }
 
+    /// Returns the current velocity of the particle.
+    pub fn get_velocity(&self) -> Vec3 {
+        self.velocity
+    }
+
     /// Calculate the updated velocity of the particle given a delta time step.
     /// This functionality is constant across different simulation algorithms,
     /// so it is implemented here.
     pub fn update_velocity(&mut self, delta_time: f64) {
         self.velocity += (self.force + self.old_force) * (delta_time / (2.0 * self.mass));
+    }
+
+    /// Returns the constant mass of the particle.
+    pub fn get_mass(&self) -> f64 {
+        self.mass
     }
 
     /// Calculate the vector difference between two particles' positions.

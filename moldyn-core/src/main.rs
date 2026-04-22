@@ -35,7 +35,7 @@ struct Args {
     /// The output format will be selected from the file extension. Supported formats
     /// are: YAML.
     // TODO: make this output.yaml by default
-    #[arg(short, long, default_value = "output/output.txt")]
+    #[arg(short, long, default_value = "output/output.xyz")]
     output: PathBuf,
 
     /// The time step for the simulation.
@@ -101,7 +101,7 @@ fn main() {
 
         simulation.step(args.delta_time);
 
-        if frame % 100 == 0 {
+        if frame % 10 == 0 {
             output_writer
                 .write(&args.output, &simulation)
                 .expect("error occured during simulation write");

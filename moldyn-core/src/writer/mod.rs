@@ -1,7 +1,9 @@
 //! TODO document
 
 mod txt;
+mod xyz;
 
+use crate::writer::xyz::XyzWriter;
 use crate::{Simulation, writer::txt::TxtWriter};
 use std::fs::File;
 use std::io::{BufWriter, Write};
@@ -50,10 +52,11 @@ pub trait OutputWriter {
 
 impl dyn OutputWriter {
     /// Creates a new output writer from a file extension. Supported extensions are:
-    /// `txt`
+    /// `txt`, `xyz`
     pub fn from_extension(extension: &str) -> Result<Box<dyn OutputWriter>> {
         match extension.to_ascii_lowercase().as_str() {
             "txt" | "text" => Ok(Box::new(TxtWriter::default())),
+            "xyz" => Ok(Box::new(XyzWriter::default())),
             f => Err(Error::new(
                 InvalidInput,
                 format!("Unsupported file extension: `{f}`"),
