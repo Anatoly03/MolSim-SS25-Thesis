@@ -55,4 +55,16 @@ impl Particle {
     pub fn update_velocity(&mut self, delta_time: f64) {
         self.velocity += (self.force + self.old_force) * (delta_time / (2.0 * self.mass));
     }
+
+    /// Calculate the vector difference between two particles' positions.
+    pub fn position_difference(particle1: &Particle, particle2: &Particle) -> Vec3 {
+        particle1.position - particle2.position
+    }
+
+    /// Calculate the product of the masses of two particles.
+    pub fn mass_product(particle1: &Particle, particle2: &Particle) -> f64 {
+        particle1.mass * particle2.mass
+    }
 }
+
+

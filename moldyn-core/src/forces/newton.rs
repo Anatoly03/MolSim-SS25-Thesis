@@ -14,6 +14,14 @@ impl Force for NewtonForce {
     }
 
     fn force(&self, particle: &Particle, other: &Particle) -> Vec3 {
-        todo!("newton force not implemented")
+        let diff = Particle::position_difference(particle, other);
+        let distance = diff.length();
+
+        if distance == 0.0 {
+            Vec3::zero()
+        } else {
+            let mul_mass = Particle::mass_product(particle, other);
+            diff * (mul_mass / distance.powi(3))
+        }
     }
 }

@@ -48,16 +48,24 @@ fn main() {
     };
 
     println!("simulation name: `{}`", input.name);
+    println!("------------------\n");
 
     // generate simulation
     let mut simulation: Box<dyn Simulation> = input.into();
 
+    simulation.for_each_particles(&mut |p| println!("{p:?}\n"));
+    println!("------------------\n");
     simulation.step();
+    simulation.for_each_particles(&mut |p| println!("{p:?}\n"));
+    println!("------------------\n");
     simulation.step();
+    simulation.for_each_particles(&mut |p| println!("{p:?}\n"));
+    println!("------------------\n");
     simulation.step();
+    simulation.for_each_particles(&mut |p| println!("{p:?}\n"));
+    println!("------------------\n");
     simulation.step();
-
-    simulation.for_each_particles(&mut |p| println!("{p:?}"));
+    simulation.for_each_particles(&mut |p| println!("{p:?}\n"));
 
     // // this is supposed to panic and confirm that force deserialization is working
     // let mut p1 = Particle::default();
