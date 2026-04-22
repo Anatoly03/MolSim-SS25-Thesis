@@ -28,7 +28,13 @@ impl TryFrom<PathBuf> for FileDefinition {
         let file_extension = value
             .extension()
             .and_then(|ext| ext.to_str())
-            .unwrap_or("")
+            .ok_or(Error::new(
+                InvalidInput,
+                format!(
+                    "No file extension provided, could not select parser for `{}`",
+                    value.display()
+                ),
+            ))?
             .to_ascii_lowercase();
 
         match file_extension.as_str() {
@@ -36,13 +42,13 @@ impl TryFrom<PathBuf> for FileDefinition {
                 let file = std::fs::File::open(&value)?;
 
                 let a = serde_yaml::from_reader(file)
-                    .map_err(|e| Error::new(InvalidInput, format!("parse error: {e}")))?;
+                    .map_err(|e| Error::new(InvalidInput, format!("Parse error: {e}")))?;
 
                 Ok(a)
             }
             _ => Err(Error::new(
                 InvalidInput,
-                format!("unsupported file extension: {file_extension}"),
+                format!("Unsupported file extension: `{file_extension}`"),
             )),
         }
     }
