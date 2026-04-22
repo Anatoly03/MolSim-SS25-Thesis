@@ -28,17 +28,25 @@ impl Simulation for DirectSum {
     }
 
     // index-based approach because two mutable iterators were problematic
-    // TODO again we run into (&mut, &mut) problems, rethink design choice
     fn for_each_particle_pairs_mut<'a>(&'a mut self, f: &mut dyn FnMut(&mut Particle, &mut Particle)) {
         let count = self.particle_count();
 
         for i in 0..count {
             // newtons third law: skip same pairs
             for j in (i + 1)..count {
-                let particle_i = &mut self.particles[i];
-                let particle_j = &mut self.particles[j];
+                // https://doc.rust-lang.org/std/vec/struct.Vec.html#method.split_at_mut
+                let (left, right) = self.particles.split_at_mut(j);
 
-                f(particle_i, particle_j);
+                // conceptually:
+                //
+                // [p1,  p2,  p3,  p4,  p5]
+                //        i         j
+                // [p1,  p2,  p3],[p4,  p5]
+                //       ^^        ^^ avoid borrow issue with split_at_mut
+                
+                // TODO document in slides
+
+                f(&mut left[i], &mut right[0]);
             }
         }
     }
