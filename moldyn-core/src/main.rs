@@ -6,15 +6,17 @@ mod particle;
 mod reader;
 mod simulation;
 mod vec3;
+mod writer;
 
 use clap::Parser;
 pub use forces::{Force, LennardJonesForce, NewtonForce};
 pub use particle::Particle;
 pub use simulation::Simulation;
-use std::{
-    fs, io::{BufWriter, Write}, path::{Path, PathBuf}
-};
+use std::fs;
+use std::io::{BufWriter, Write};
+use std::path::PathBuf;
 pub use vec3::Vec3;
+pub use writer::OutputWriter;
 
 use crate::reader::FileDefinition;
 
@@ -32,8 +34,17 @@ struct Args {
     /// the directories along the path will be created if they do not exist.
     /// The output format will be selected from the file extension. Supported formats
     /// are: YAML.
-    #[arg(short, long, default_value = "output/output.yaml")]
+    // TODO: make this output.yaml by default
+    #[arg(short, long, default_value = "output/output.txt")]
     output: PathBuf,
+
+    /// The time step for the simulation.
+    #[arg(short, long, default_value_t = 0.0014)]
+    delta_time: f64,
+
+    /// The total time for the simulation to run.
+    #[arg(short, long, default_value_t = 100.0)]
+    total_time: f64,
 }
 
 /// The main entry point for the moldyn-core library.
@@ -71,21 +82,32 @@ fn main() {
     // generate simulation
     let mut simulation: Box<dyn Simulation> = input.into();
 
-    for i in 0..5 {
-        println!("Step {i}");
-        simulation.step();
+    // set up output writer
+    let output_extension = args.output.extension().unwrap_or(std::ffi::OsStr::new(""));
 
-        let file = match fs::File::create(write_directory.join(format!("sim_{}.log", i))) {
-            Ok(file) => file,
+    let mut output_writer =
+        match <dyn OutputWriter>::from_extension(output_extension.to_str().unwrap_or("")) {
+            Ok(writer) => writer,
             Err(e) => {
-                eprintln!("Error creating output file: {}", e);
+                eprintln!("Error creating output writer: {}", e);
                 std::process::exit(1);
             }
         };
-        let mut writer = BufWriter::new(file);
 
-        simulation.for_each_particles(&mut move |p| {
-            writeln!(writer, "{p:?}").expect("Error writing to output file");
-        });
+    let mut current_time = 0.0;
+    let mut frame = 0;
+    while current_time < args.total_time {
+        println!("Step {frame}");
+
+        simulation.step(args.delta_time);
+
+        if frame % 100 == 0 {
+            output_writer
+                .write(&args.output, &simulation)
+                .expect("error occured during simulation write");
+        }
+
+        current_time += args.delta_time;
+        frame += 1;
     }
 }

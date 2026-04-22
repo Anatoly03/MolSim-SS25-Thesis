@@ -14,7 +14,7 @@ pub use sum::DirectSum;
 //   but `particle_pairs` had implementation problems returning slide::IntoIter
 
 /// An interface-level abstraction of a molecular dynamics simulation. A
-/// `simulation` is a method of organizing the particles and forces in a way
+/// [Simulation] is a method of organizing the particles and forces in a way
 /// that allows for efficient computation.
 pub trait Simulation {
     /// Invokes a lambda callback for each particle in the simulation.
@@ -74,15 +74,13 @@ pub trait Simulation {
     }
 
     /// TODO document
-    fn step(&mut self) {
-        const DELTA_T: f64 = 0.014;
-
-        self.update_position(DELTA_T);
+    fn step(&mut self, delta_t: f64) {
+        self.update_position(delta_t);
         // TODO delay force
         self.update_force();
         // APPLY GRAVITY HERE
         // CALCULATE BORDER BEHAVIOUR
-        self.update_velocity(DELTA_T);
+        self.update_velocity(delta_t);
         // TODO UPDATE CURRENT TIME += DELTA TIME
     }
 

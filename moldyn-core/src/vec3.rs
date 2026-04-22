@@ -7,12 +7,18 @@
 use serde::{Deserialize, Serialize, de::Visitor};
 use std::{marker::PhantomData, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
 
+/// A struct representing a three-dimensional [mathematical vector](https://en.wikipedia.org/wiki/Vector_%28mathematics_and_physics%29).
+/// These are used to represent particle information, such as position
+/// or velocity, in three-dimensional space. 
 #[derive(Debug, PartialEq, Clone, Copy, Serialize, Default)]
 pub struct Vec3<T = f64> {
     pub x: T,
     pub y: T,
     pub z: T,
 }
+
+// consider alternative implementation (overkill for this project):
+// pub struct IVec<const N: usize, T = f64> ([T; N]);
 
 // generic vec3 method
 impl<T> Vec3<T> {
