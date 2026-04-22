@@ -1,8 +1,8 @@
 //! TODO document
 
-use std::slice::IterMut;
-
 use crate::{Particle, simulation::Simulation};
+use std::slice::{Iter, IterMut};
+use std::vec::IntoIter;
 
 /// The [DirectSum] simulation method is the most intuitive way to process
 /// a molecular dynamics simulation. It bases the computation on the
@@ -15,15 +15,35 @@ pub struct DirectSum {
 }
 
 impl Simulation for DirectSum {
-    fn particles<'a>(&'a self) -> std::slice::Iter<'a, Particle> {
-        self.particles.iter()
+    fn for_each_particles<'a>(&'a self, f: &mut dyn FnMut(&Particle)) {
+        for part in &self.particles {
+            f(part);
+        }
     }
 
-    fn particles_mut<'a>(&'a mut self) -> IterMut<'a, Particle> {
-        self.particles.iter_mut()
+    fn for_each_particles_mut<'a>(&'a mut self, f: &mut dyn FnMut(&mut Particle)) {
+        for part in &mut self.particles {
+            f(part);
+        }
     }
 
-    fn particle_pairs_mut<'a>(&'a mut self) -> IterMut<'a, (Particle, Particle)> {
-        todo!()
+    // index-based approach because two mutable iterators were problematic
+    // TODO again we run into (&mut, &mut) problems, rethink design choice
+    fn for_each_particle_pairs_mut<'a>(&'a mut self, f: &mut dyn FnMut(&mut Particle, &mut Particle)) {
+        let count = self.particle_count();
+
+        for i in 0..count {
+            // newtons third law: skip same pairs
+            for j in (i + 1)..count {
+                let particle_i = &mut self.particles[i];
+                let particle_j = &mut self.particles[j];
+
+                f(particle_i, particle_j);
+            }
+        }
+    }
+
+    fn particle_count(&self) -> usize {
+        self.particles.len()
     }
 }
