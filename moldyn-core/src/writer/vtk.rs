@@ -84,7 +84,7 @@ impl OutputWriter for VtkWriter {
     fn write_frame(
         &mut self,
         writer: &mut BufWriter<std::fs::File>,
-        state: &Box<dyn Simulation>,
+        state: &dyn Simulation,
     ) -> std::io::Result<()> {
         // equivalent cpp: auto points = vtkSmartPointer<vtkPoints>::New();
         let particle_count = state.particle_count();

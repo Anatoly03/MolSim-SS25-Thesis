@@ -5,7 +5,6 @@ use crate::{Particle, Vec3};
 pub use ljp::LennardJonesForce;
 pub use newton::NewtonForce;
 use serde::{Deserialize, de::Visitor};
-use std::sync::Arc;
 
 pub trait Force {
     /// # Returns
@@ -77,6 +76,8 @@ impl<'de> Visitor<'de> for ForceVisitor {
 
     // TODO: implement deserialization with parameters.
     // idea: force: { type: ..., params... }
+    // idea: force: lennard-jones: { epsilon: ..., sigma: ... }
+    // idea: force: gravity: { factor: ... }
 }
 
 impl<'de> Deserialize<'de> for Box<dyn Force> {

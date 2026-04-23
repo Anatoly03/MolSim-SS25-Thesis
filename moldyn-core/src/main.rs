@@ -13,7 +13,6 @@ pub use forces::{Force, LennardJonesForce, NewtonForce};
 pub use particle::Particle;
 pub use simulation::Simulation;
 use std::fs;
-use std::io::{BufWriter, Write};
 use std::path::PathBuf;
 pub use vec3::Vec3;
 pub use writer::OutputWriter;
@@ -68,7 +67,7 @@ fn main() {
     println!("simulation name: `{}`", input.name);
 
     // create output directory
-    match args.output.parent().map(|path| fs::create_dir_all(path)) {
+    match args.output.parent().map(fs::create_dir_all) {
         Some(Ok(())) | None => (),
         Some(Err(e)) => {
             eprintln!("Error creating output directory: {}", e);
@@ -100,7 +99,7 @@ fn main() {
 
         if frame % args.frame_period == 0 {
             output_writer
-                .write(&args.output, &simulation)
+                .write(&args.output, &*simulation)
                 .expect("error occured during simulation write");
         }
 

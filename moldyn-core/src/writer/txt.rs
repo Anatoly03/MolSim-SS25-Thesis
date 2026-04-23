@@ -20,7 +20,7 @@ impl OutputWriter for TxtWriter {
     fn write_frame(
         &mut self,
         writer: &mut BufWriter<std::fs::File>,
-        state: &Box<dyn Simulation>,
+        state: &dyn Simulation,
     ) -> std::io::Result<()> {
         state.for_each_particles(&mut move |p| {
             writeln!(writer, "{p:?}").expect("Error writing to output file");

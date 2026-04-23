@@ -20,9 +20,8 @@ impl OutputWriter for XyzWriter {
     fn write_frame(
         &mut self,
         writer: &mut BufWriter<std::fs::File>,
-        state: &Box<dyn Simulation>,
+        state: &dyn Simulation,
     ) -> std::io::Result<()> {
-
         writeln!(writer, "{}", state.particle_count())?;
         writeln!(
             writer,

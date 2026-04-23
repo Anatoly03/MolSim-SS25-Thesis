@@ -5,11 +5,14 @@
 //! https://github.com/Anatoly03/MolSim-WS25-GroupA/blob/assignment5-local-backup/src/core/math/Vec3.h
 
 use serde::{Deserialize, Serialize, de::Visitor};
-use std::{marker::PhantomData, ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign}};
+use std::{
+    marker::PhantomData,
+    ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign},
+};
 
 /// A struct representing a three-dimensional [mathematical vector](https://en.wikipedia.org/wiki/Vector_%28mathematics_and_physics%29).
 /// These are used to represent particle information, such as position
-/// or velocity, in three-dimensional space. 
+/// or velocity, in three-dimensional space.
 #[derive(Debug, PartialEq, Clone, Copy, Serialize, Default)]
 pub struct Vec3<T = f64> {
     pub x: T,
@@ -258,7 +261,12 @@ where
             // [x, y, ...]
             Ok(Some(value)) => value,
             // [x]
-            Ok(None) => return Ok(Vec3 { x, ..Default::default() }),
+            Ok(None) => {
+                return Ok(Vec3 {
+                    x,
+                    ..Default::default()
+                });
+            }
             Err(e) => return Err(e),
         };
 
@@ -266,7 +274,13 @@ where
             // [x, y, z, ...]
             Ok(Some(value)) => value,
             // [x, y]
-            Ok(None) => return Ok(Vec3 { x, y, ..Default::default() }),
+            Ok(None) => {
+                return Ok(Vec3 {
+                    x,
+                    y,
+                    ..Default::default()
+                });
+            }
             Err(e) => return Err(e),
         };
 

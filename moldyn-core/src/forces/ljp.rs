@@ -15,8 +15,8 @@ impl Force for LennardJonesForce {
     fn system_name(&self) -> &str {
         "lennard-jones"
     }
-    
-    fn force(&self, particle: &Particle, other: &Particle) -> Vec3 {
+
+    fn force(&self, _particle: &Particle, _other: &Particle) -> Vec3 {
         todo!("lennard jones force not implemented")
     }
 }
