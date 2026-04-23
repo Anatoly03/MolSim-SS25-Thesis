@@ -13,6 +13,9 @@ pub trait Force {
     /// deserialization. The characters are expected to be in `lowercase`.
     fn system_name(&self) -> &str;
 
+    /// Calculates the potential energy between two particles.
+    fn potential(&self, particle: &Particle, other: &Particle) -> f64;
+
     /// Calculates the force between two particles. For directly applying the
     /// force, see [Force::apply_force].
     ///
@@ -34,7 +37,17 @@ pub trait Force {
     /// let lennard_jones = LennardJonesForce::default();
     /// let force = lennard_jones.apply_force(&particle1, &particle2);
     /// ```
-    fn force(&self, particle: &Particle, other: &Particle) -> Vec3;
+    fn force(&self, particle: &Particle, other: &Particle) -> Vec3 {
+        let potential = self.potential(particle, other);
+        let diff = Particle::position_difference(other, particle);
+        let distance = diff.length();
+
+        if distance == 0.0 {
+            Vec3::zero()
+        } else {
+            -diff * (potential / distance)
+        }
+    }
 
     /// Applies the calculated force to a particle pair.
     fn apply_force(&self, particle: &mut Particle, other: &mut Particle) {

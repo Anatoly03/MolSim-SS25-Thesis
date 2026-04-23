@@ -14,15 +14,15 @@ impl Force for NewtonForce {
         "newton"
     }
 
-    fn force(&self, particle: &Particle, other: &Particle) -> Vec3 {
-        let diff = Particle::position_difference(other, particle);
+    fn potential(&self, particle: &Particle, other: &Particle) -> f64 {
+        let diff = Particle::position_difference(particle, other);
         let distance = diff.length();
 
         if distance == 0.0 {
-            Vec3::zero()
+            0.0
         } else {
             let mul_mass = Particle::mass_product(particle, other);
-            diff * (self.factor * mul_mass / distance.powi(3))
+            -self.factor * mul_mass / distance
         }
     }
 }

@@ -21,11 +21,19 @@ impl Force for LennardJonesForce {
         "lennard-jones"
     }
 
-    fn force(&self, _particle: &Particle, _other: &Particle) -> Vec3 {
-        let _ = self.cutoff_radius; // to avoid 'unused variable' warning
-        let _ = self.epsilon; // to avoid 'unused variable' warning
-        let _ = self.sigma; // to avoid 'unused variable' warning
-        todo!("lennard jones force not implemented")
+    fn potential(&self, particle: &Particle, other: &Particle) -> f64 {
+        let diff = Particle::position_difference(particle, other);
+        let distance = diff.length();
+
+        if distance == 0.0 || distance > self.cutoff_radius {
+            0.0
+        } else {
+            let frac = self.sigma / distance;
+            let frac6 = frac.powi(6);
+            let frac12 = frac6.powi(2);
+
+            4.0 * self.epsilon * (frac12 - frac6)
+        }
     }
 }
 
