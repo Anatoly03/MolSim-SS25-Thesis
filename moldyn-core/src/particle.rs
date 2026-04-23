@@ -1,7 +1,7 @@
 //! This module contains the [Particle] struct.
 
-use serde::{Deserialize, Serialize};
 use crate::Vec3;
+use serde::{Deserialize, Serialize};
 
 /// A struct representing a particle record in the simulation.
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default)]
@@ -56,7 +56,8 @@ impl Particle {
     /// This functionality is constant across different simulation algorithms,
     /// so it is implemented here.
     pub fn update_position(&mut self, delta_time: f64) {
-        self.position += self.velocity * delta_time + self.force * (delta_time.powi(2) / (2.0 * self.mass));
+        self.position +=
+            self.velocity * delta_time + self.force * (delta_time.powi(2) / (2.0 * self.mass));
     }
 
     /// Returns the current velocity of the particle.
@@ -76,7 +77,8 @@ impl Particle {
         self.mass
     }
 
-    /// Calculate the vector difference between two particles' positions.
+    /// Calculate the vector difference between two particles' positions. Note
+    /// that the order of the particles affects the sign.
     pub fn position_difference(particle1: &Particle, particle2: &Particle) -> Vec3 {
         particle1.position - particle2.position
     }
@@ -87,4 +89,35 @@ impl Particle {
     }
 }
 
+/// These methods are used for creating particles in tests.
+#[cfg(test)]
+impl Particle {
+    /// Creates a particle at the given position with zero velocity.
+    pub fn at(x: f64, y: f64, z: f64) -> Self {
+        Self {
+            position: Vec3::new(x, y, z),
+            ..Default::default()
+        }
+    }
 
+    /// Builder method for testing. Manually sets the velocity of the particle
+    /// to the given value.
+    pub fn with_velocity(mut self, x: f64, y: f64, z: f64) -> Self {
+        self.velocity = Vec3::new(x, y, z);
+        self
+    }
+
+    /// Builder method for testing. Manually sets the force of the particle
+    /// to the given value.
+    pub fn with_force(mut self, x: f64, y: f64, z: f64) -> Self {
+        self.force = Vec3::new(x, y, z);
+        self
+    }
+
+    /// Builder method for testing. Manually sets the mass of the particle
+    /// to the given value.
+    pub fn with_mass(mut self, mass: f64) -> Self {
+        self.mass = mass;
+        self
+    }
+}
