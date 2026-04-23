@@ -55,6 +55,11 @@ pub trait Simulation {
         self.for_each_particles_mut(&mut |p| p.update_position(delta_t));
     }
 
+    /// Delays the force.
+    fn delay_force(&mut self) {
+        self.for_each_particles_mut(&mut |p| p.delay_force());
+    }
+
     /// Updates the velocity of all particles.
     fn update_force(&mut self) {
         // cannot borrow `*self` as mutable because it is also borrowed as immutable
@@ -76,7 +81,7 @@ pub trait Simulation {
     /// TODO document
     fn step(&mut self, delta_t: f64) {
         self.update_position(delta_t);
-        // TODO delay force
+        self.delay_force();
         self.update_force();
         // APPLY GRAVITY HERE
         // CALCULATE BORDER BEHAVIOUR

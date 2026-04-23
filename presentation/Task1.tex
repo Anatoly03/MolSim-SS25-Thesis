@@ -278,6 +278,25 @@ struct Particle {
     TODO see direct sum implementation and pairwise iteration
 \end{frame}
 
+\simpleframe\begin{frame}{Project State}
+    \centering
+    \includegraphics[width=\textwidth]{media/hello-particles.png}
+
+    \begin{itemize}
+        \item \blue{File Reading}: YAML
+        \item \blue{File Writing}: XYZ, VTK
+    \end{itemize}
+\end{frame}
+
+\simpleframe\begin{frame}{Developer Experience}
+    \begin{itemize}
+        \item It is definitely easier to work in a programming language in which you have more years of experience. \blue{$\rightarrow$ Bias when measuring `developer experience'}.
+        \item Rust compiler prevents you from compiling code that goes against ownership model. \blue{$\rightarrow$ Not beginner-friendly and slow feedback loop, but enforces code quality in the early stage of the source code creation}.
+        \item C++ has a more fragmented ecosystem: CMake, \texttt{getopt}, \texttt{doxygen}, \texttt{clang-format}, manual dependency installation like \texttt{spdlog}, ...
+        \item Here: \text{cargo} for everything including dependency management, similar to \text{pip} in Python. \blue{$\rightarrow$ Easier management without less control}.
+    \end{itemize}
+\end{frame}
+
 \simpleframe\begin{frame}{Ferris will answer questions}
     \centering
     % image from:

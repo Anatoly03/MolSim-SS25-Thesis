@@ -43,8 +43,13 @@ struct Args {
     delta_time: f64,
 
     /// The total time for the simulation to run.
-    #[arg(short, long, default_value_t = 10.0)]
+    #[arg(short, long, default_value_t = 1000.0)]
     total_time: f64,
+
+    /// The period (in frames) for writing the simulation output. This defines the
+    /// frequency of output writes.
+    #[arg(short = 's', long, default_value_t = 250)]
+    frame_period: usize,
 }
 
 /// The main entry point for the moldyn-core library.
@@ -63,16 +68,8 @@ fn main() {
     println!("simulation name: `{}`", input.name);
 
     // create output directory
-    let write_directory = match args.output.parent().map(|path| {
-        fs::create_dir_all(path)?;
-        Ok::<PathBuf, std::io::Error>(path.to_owned())
-    }) {
-        // if parent path was specified and created successfully, use it
-        Some(Ok(path)) => path.to_owned(),
-        // if no parent path specified, all is good (大丈夫)
-        None => PathBuf::new(),
-        // if parent path was specified but not created, exit non-zero
-        // we land here if OS error occured (e.g. path was a file)
+    match args.output.parent().map(|path| fs::create_dir_all(path)) {
+        Some(Ok(())) | None => (),
         Some(Err(e)) => {
             eprintln!("Error creating output directory: {}", e);
             std::process::exit(1);
@@ -101,7 +98,7 @@ fn main() {
 
         simulation.step(args.delta_time);
 
-        if frame % 10 == 0 {
+        if frame % args.frame_period == 0 {
             output_writer
                 .write(&args.output, &simulation)
                 .expect("error occured during simulation write");

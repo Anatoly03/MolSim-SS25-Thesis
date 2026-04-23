@@ -121,3 +121,5 @@ impl Particle {
         self
     }
 }
+
+// TODO tests for [update_velocity], [update_position], and [delay_force]
