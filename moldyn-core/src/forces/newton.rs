@@ -28,7 +28,12 @@ impl Force for NewtonForce {
 }
 
 impl Default for NewtonForce {
-    /// The default instance of [NewtonForce]. The gravity factor is set to `1.0`.
+    /// The default instance of [NewtonForce]. The parameters are set
+    /// to the following.
+    ///
+    /// | Parameter | Value |
+    /// | --- | --- |
+    /// | `factor` | `1.0` |
     fn default() -> Self {
         Self { factor: 1.0 }
     }

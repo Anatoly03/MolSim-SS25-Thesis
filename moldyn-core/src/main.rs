@@ -11,13 +11,12 @@ mod writer;
 use clap::Parser;
 pub use forces::{Force, LennardJonesForce, NewtonForce};
 pub use particle::Particle;
+pub use reader::{FileDefinition, SimulationArgs};
 pub use simulation::Simulation;
 use std::fs;
 use std::path::PathBuf;
 pub use vec3::Vec3;
 pub use writer::OutputWriter;
-
-use crate::reader::FileDefinition;
 
 /// Molecular Dynamics Thesis Code. This library implements a simple
 /// engine to simulate molecular dynamics.

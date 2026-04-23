@@ -68,7 +68,7 @@ impl<'de> Visitor<'de> for ForceVisitor {
         E: serde::de::Error,
     {
         match value.to_ascii_lowercase().as_str() {
-            "lennardjones" | "lj" => Ok(Box::new(LennardJonesForce::default())),
+            "lennardjones" | "lennard-jones" | "lj" => Ok(Box::new(LennardJonesForce::default())),
             "newton" | "gravitational" => Ok(Box::new(NewtonForce::default())),
             _ => Err(E::custom(format!("Unknown force type: {}", value))),
         }

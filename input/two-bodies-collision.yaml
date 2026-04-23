@@ -1,0 +1,35 @@
+# This file describes the initial conditions for the simulation of Halley's comet.
+
+name: halleys-comet
+force: lennard-jones
+algorithm: direct-sum
+
+args:
+  time_start: 0.0
+  time_end: 20.0
+  time_step: 0.0005
+
+# config:
+#   output_interval: 5
+#   cell_size: [5, 5, 5]
+#   domain_min: [0, 0, 0]
+#   domain_max: [180,90,0]
+#   epsilon: 5.0
+
+particles:
+  - type: cuboid
+    n: [100, 20, 1]
+    position: [20.0, 20.0, 0.0]
+    velocity: [0.0, 0.0, 0.0]
+    mass: 1.0
+    sigma: 1.0
+    dist: 1.1225
+    brownian_sigma: 0.0000
+  - type: cuboid
+    n: [20, 20, 1]
+    position: [70.0, 60.0, 0.0]
+    velocity: [0.0, -10.0, 0.0]
+    mass: 1.0
+    sigma: 1.0
+    dist: 1.1225
+    brownian_sigma: 0.0000

@@ -77,8 +77,7 @@ impl From<FileDefinition> for Box<dyn Simulation> {
             particles,
         } = value;
 
-        let force_arc = Arc::from(force);
-        algorithm.set_force(force_arc);
+        algorithm.set_force(Arc::from(force));
         algorithm.set_particles(particles);
         algorithm.set_args(args);
 
