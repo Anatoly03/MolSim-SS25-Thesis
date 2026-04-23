@@ -35,7 +35,7 @@ struct Args {
     /// The output format will be selected from the file extension. Supported formats
     /// are: YAML.
     // TODO: make this output.yaml by default
-    #[arg(short, long, default_value = "output/output.xyz")]
+    #[arg(short, long, default_value = "output/output.vtk")]
     output: PathBuf,
 
     /// The time step for the simulation.
@@ -43,7 +43,7 @@ struct Args {
     delta_time: f64,
 
     /// The total time for the simulation to run.
-    #[arg(short, long, default_value_t = 100.0)]
+    #[arg(short, long, default_value_t = 10.0)]
     total_time: f64,
 }
 
