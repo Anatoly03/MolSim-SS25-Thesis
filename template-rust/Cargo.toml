@@ -5,6 +5,5 @@ authors = []
 edition = "2024"
 publish = false
 
-[features]
-default = []
-vtk = []
+[dependencies]
+vtkio = "0.6"

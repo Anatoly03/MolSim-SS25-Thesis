@@ -320,6 +320,9 @@ dependencies = [
 [[package]]
 name = "pse-mol-dynamics"
 version = "0.1.0"
+dependencies = [
+ "vtkio",
+]
 
 [[package]]
 name = "quick-xml"

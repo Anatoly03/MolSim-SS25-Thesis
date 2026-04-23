@@ -1,10 +1,8 @@
-#[cfg(feature = "vtk")]
 mod vtk;
 mod xyz;
 
 use crate::particle::Particle;
 use std::io::Result;
-#[cfg(feature = "vtk")]
 pub use vtk::VTKWriter;
 pub use xyz::XYZWriter;
 

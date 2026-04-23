@@ -12,7 +12,7 @@ impl OutputWriter for XYZWriter {
         filename: &str,
         iteration: usize,
     ) -> Result<()> {
-        let output_filename = format!("{filename}_{iteration}.xyz");
+        let output_filename = format!("{filename}_{iteration:0>4}.xyz");
 
         let f = File::create(&output_filename)?;
         let mut writer = BufWriter::new(f);
