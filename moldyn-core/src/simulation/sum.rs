@@ -19,16 +19,16 @@ pub struct DirectSum {
 }
 
 impl Simulation for DirectSum {
-    fn for_each_particles<'a>(&'a self, f: &mut dyn FnMut(&Particle)) {
-        for part in &self.particles {
-            f(part);
-        }
+    fn system_name(&self) -> &str {
+        "direct-sum"
     }
 
-    fn for_each_particles_mut<'a>(&'a mut self, f: &mut dyn FnMut(&mut Particle)) {
-        for part in &mut self.particles {
-            f(part);
-        }
+    fn particles(&self) -> &[Particle] {
+        &self.particles
+    }
+
+    fn particles_mut(&mut self) -> &mut [Particle] {
+        &mut self.particles
     }
 
     // index-based approach because two mutable iterators were problematic

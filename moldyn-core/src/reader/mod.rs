@@ -20,11 +20,11 @@ pub struct FileDefinition {
     pub name: Option<String>,
 
     /// TODO document
-    #[serde(skip_serializing, default)]
+    #[serde(default)]
     pub force: Box<dyn Force>,
 
     /// TODO document
-    #[serde(skip_serializing, default)]
+    #[serde(default)]
     pub algorithm: Box<dyn Simulation>,
 
     /// TODO document

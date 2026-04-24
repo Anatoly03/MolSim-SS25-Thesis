@@ -3,6 +3,7 @@
 mod txt;
 mod vtk;
 mod xyz;
+mod yml;
 
 use crate::Simulation;
 use std::fs::File;
@@ -12,6 +13,7 @@ use std::{ffi::OsStr, path::Path};
 pub use txt::TxtWriter;
 pub use vtk::VtkWriter;
 pub use xyz::XyzWriter;
+pub use yml::YamlWriter;
 
 /// A trait for writing simulation results to an output file.
 pub trait OutputWriter {
@@ -58,6 +60,7 @@ impl dyn OutputWriter {
             "txt" | "text" => Ok(Box::new(TxtWriter::default())),
             "xyz" => Ok(Box::new(XyzWriter::default())),
             "vtk" | "vtu" => Ok(Box::new(VtkWriter::default())),
+            "yml" | "yaml" => Ok(Box::new(YamlWriter::default())),
             f => Err(Error::new(
                 InvalidInput,
                 format!("Unsupported file extension: `{f}`"),

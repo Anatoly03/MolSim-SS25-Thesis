@@ -4,7 +4,7 @@ mod newton;
 use crate::{Particle, Vec3};
 pub use ljp::LennardJonesForce;
 pub use newton::NewtonForce;
-use serde::{Deserialize, de::Visitor};
+use serde::{Deserialize, Serialize, de::Visitor};
 
 pub trait Force {
     /// # Returns
@@ -54,6 +54,15 @@ pub trait Force {
         let force = self.force(particle, other);
         particle.apply_force(force);
         other.apply_force(-force);
+    }
+}
+
+impl<'a> Serialize for dyn Force + 'a {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.system_name())
     }
 }
 

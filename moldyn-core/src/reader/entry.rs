@@ -157,23 +157,25 @@ impl From<ParticleLike> for Vec<Particle> {
                         for nz in 0..depth {
                             let position = c.position.clone().map(|expr| {
                                 expr.map(|e| {
-                                    e.eval_with_context(&[
+                                    e.eval_with_context([
                                         ("nx", nx.into()),
                                         ("ny", ny.into()),
                                         ("nz", nz.into()),
                                     ])
                                     .unwrap()
-                                }).unwrap_or(0.0)
+                                })
+                                .unwrap_or(0.0)
                             });
                             let velocity = c.velocity.clone().map(|expr| {
                                 expr.map(|e| {
-                                    e.eval_with_context(&[
+                                    e.eval_with_context([
                                         ("nx", nx.into()),
                                         ("ny", ny.into()),
                                         ("nz", nz.into()),
                                     ])
                                     .unwrap()
-                                }).unwrap_or(0.0)
+                                })
+                                .unwrap_or(0.0)
                             });
                             let mass = c.mass;
 

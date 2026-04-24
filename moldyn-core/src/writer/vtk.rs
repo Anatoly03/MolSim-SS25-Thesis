@@ -93,7 +93,7 @@ impl OutputWriter for VtkWriter {
         let mut velocities = Vec::new();
         let mut forces = Vec::new();
 
-        state.for_each_particles(&mut |p| {
+        for p in state.particles() {
             // equivalent cpp: points->InsertNextPoint(p.getX().data());
             points.push(p.get_position().x);
             points.push(p.get_position().y);
@@ -111,7 +111,7 @@ impl OutputWriter for VtkWriter {
             forces.push(p.get_force().x as f32);
             forces.push(p.get_force().y as f32);
             forces.push(p.get_force().z as f32);
-        });
+        }
 
         let attributes = Attributes {
             point: vec![

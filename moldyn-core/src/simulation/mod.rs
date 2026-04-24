@@ -3,7 +3,7 @@
 mod sum;
 
 use crate::{Force, Particle, reader::SimulationArgs};
-use serde::{Deserialize, de::Visitor};
+use serde::{Deserialize, Serialize, de::Visitor};
 use std::sync::Arc;
 pub use sum::DirectSum;
 
@@ -17,11 +17,29 @@ pub use sum::DirectSum;
 /// [Simulation] is a method of organizing the particles and forces in a way
 /// that allows for efficient computation.
 pub trait Simulation {
+    /// # Returns
+    ///
+    /// Name of the simulation system, which is used for serialization and
+    /// deserialization. The characters are expected to be in `lowercase`.
+    fn system_name(&self) -> &str;
+
+    fn particles(&self) -> &[Particle];
+
+    fn particles_mut(&mut self) -> &mut [Particle];
+
     /// Invokes a lambda callback for each particle in the simulation.
-    fn for_each_particles<'a>(&'a self, f: &mut dyn FnMut(&Particle));
+    fn for_each_particles<'a>(&'a self, f: &mut dyn FnMut(&Particle)) {
+        for part in self.particles().iter() {
+            f(part);
+        }
+    }
 
     /// Invokes a lambda callback for each particle (mutable) in the simulation.
-    fn for_each_particles_mut<'a>(&'a mut self, f: &mut dyn FnMut(&mut Particle));
+    fn for_each_particles_mut<'a>(&'a mut self, f: &mut dyn FnMut(&mut Particle)) {
+        for part in self.particles_mut().iter_mut() {
+            f(part);
+        }
+    }
 
     /// The core method of the trait. Different implementations of [Simulation] vary
     /// in performance as this is the heaviest part of the simulation. Invokes a lambda
@@ -93,6 +111,15 @@ pub trait Simulation {
     }
 
     // TODO PLOT PARTICLES
+}
+
+impl<'a> Serialize for dyn Simulation + 'a {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(self.system_name())
+    }
 }
 
 struct SimulationVisitor;

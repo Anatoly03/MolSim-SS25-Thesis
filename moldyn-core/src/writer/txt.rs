@@ -22,9 +22,9 @@ impl OutputWriter for TxtWriter {
         writer: &mut BufWriter<std::fs::File>,
         state: &dyn Simulation,
     ) -> std::io::Result<()> {
-        state.for_each_particles(&mut move |p| {
+        for p in state.particles() {
             writeln!(writer, "{p:?}").expect("Error writing to output file");
-        });
+        }
         Ok(())
     }
 
