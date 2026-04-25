@@ -21,9 +21,10 @@
 //! You can enable it by adding `--features vtk` to the cargo commands or by
 //! changing line 9 in `Cargo.toml` to include the feature.
 //! 
-//! ```diff
-//! - default = []
-//! + default = ["vtk"]
+//! ```toml
+//! [features]
+//! default = ["vtk"]
+//! vtk = []
 //! ```
 
 mod file_reader;

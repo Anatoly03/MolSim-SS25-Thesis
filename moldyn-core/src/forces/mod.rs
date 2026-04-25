@@ -6,11 +6,20 @@ pub use ljp::LennardJonesForce;
 pub use newton::NewtonForce;
 use serde::{Deserialize, Serialize, de::Visitor};
 
+/// The trait for force systems. A force system is a mathematical model which
+/// describes the [potential energy](https://en.wikipedia.org/wiki/Potential_energy)
+/// between two particles.
+/// 
+/// This trait provides two methods [Force::potential] and [Force::force] for interacting
+/// with the force system. The potential is the scalar value used as the factor to the
+/// normalized force vector.
+/// 
+/// The method [Force::system_name] is used for serialization of the force system.
 pub trait Force {
     /// # Returns
     ///
     /// Name of the force system, which is used for serialization and
-    /// deserialization. The characters are expected to be in `lowercase`.
+    /// deserialization. The characters are expected to be in `dash-case`.
     fn system_name(&self) -> &str;
 
     /// Calculates the potential energy between two particles.

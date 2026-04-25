@@ -13,7 +13,9 @@ use std::{
     sync::Arc,
 };
 
-/// TODO document
+/// A struct representing the settings and input parameters to a simulation. This
+/// is the entry point for the particle data deserialization and initialization of
+/// the [Simulation] instance.
 #[derive(Serialize, Deserialize)]
 pub struct FileDefinition {
     /// TODO document

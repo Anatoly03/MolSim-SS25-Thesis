@@ -1,4 +1,7 @@
-//! The main module for the moldyn-core library.
+//! The main crateof the molecular dynamics simulation. This library exposes the
+//! main components of the simulation.
+//! 
+//! 
 #![crate_name = "moldyn_core"]
 
 mod forces;

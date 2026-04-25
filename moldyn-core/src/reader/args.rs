@@ -2,7 +2,8 @@
 
 use serde::{Deserialize, Serialize};
 
-/// TODO document
+/// The struct representing the global simulation settings, which includes the
+/// time range and simulation delta time.
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct SimulationArgs {
     /// TODO document
