@@ -1,4 +1,4 @@
-//! The main crateof the molecular dynamics simulation. This library exposes the
+//! The main crate of the molecular dynamics simulation. This library exposes the
 //! main components of the simulation.
 //! 
 //! # Features
