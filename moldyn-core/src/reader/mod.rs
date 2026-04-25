@@ -18,14 +18,70 @@ use std::{
 /// the [Simulation] instance.
 #[derive(Serialize, Deserialize)]
 pub struct FileDefinition {
-    /// TODO document
+    /// The name of the simulation. This is an optional field that can be used to
+    /// sign a simulation input file with human-understandable semantics.
+    /// 
+    /// # Example
+    /// 
+    /// ```yaml
+    /// # This is a simple named simulation without any particles.
+    /// name: My Simulation
+    /// particles: []
+    /// ```
     pub name: Option<String>,
 
-    /// TODO document
+    /// The force model to use in the simulation. This affects the computation of
+    /// the [potential energy](https://en.wikipedia.org/wiki/Potential_energy) and
+    /// [forces](https://en.wikipedia.org/wiki/Force) between particle and yields
+    /// different results.
+    /// 
+    /// # Example
+    /// 
+    /// ```yaml
+    /// name: My Lennard-Jones Simulation
+    /// force: lennard-jones
+    /// ```
+    /// 
+    /// Or alternatively, you can set the force model to `newton` to simulate
+    /// gravitational interactions:
+    /// 
+    /// ```yaml
+    /// name: My Gravitational Simulation
+    /// force: newton
+    /// ```
+    /// 
+    /// # Note on Mass Scale
+    /// 
+    /// Note that different force models require a different scale for the
+    /// particle mass. For example, for Lennard-Jones simulations, the mass is
+    /// typically around `1.0` for every body, while for Newtonian simulations the
+    /// "mass scale" is around `1.0` for heavy bodies like the sun and a fraction
+    /// of that for lighter bodies.
+    /// 
+    /// In the simulation of Halleys Comet orbiting the solar system, each body has
+    /// the following mass:
+    /// 
+    /// - Sun: `1.0`
+    /// - Earth: `3.0 e-6`
+    /// - Jupiter: `9.5 e-4`
+    /// - Halleys Comet: `1.0 e-14`
+    /// 
+    /// Therefore representing in kilograms, you can assume that the mass of `1.0`
+    /// corresponds to `1.988 e30 kg`.
     #[serde(default)]
     pub force: Box<dyn Force>,
 
-    /// TODO document
+    /// The simulation algorithm to use in the simulation. This affects performance
+    /// and the memory structure of the simulation when managing the particle data.
+    /// A change in the algorithm should, as a rule of thumbs, not yield different
+    /// results for the same input.
+    /// 
+    /// # Example
+    /// 
+    /// ```yaml
+    /// name: My Simulation
+    /// algorithm: direct-sum
+    /// ```
     #[serde(default)]
     pub algorithm: Box<dyn Simulation>,
 
