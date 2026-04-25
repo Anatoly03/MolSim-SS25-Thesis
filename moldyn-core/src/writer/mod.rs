@@ -1,6 +1,7 @@
 //! TODO document
 
 mod txt;
+#[cfg(feature = "vtk")]
 mod vtk;
 mod xyz;
 mod yml;
@@ -11,6 +12,7 @@ use std::io::{BufWriter, Write};
 use std::io::{Error, ErrorKind::InvalidInput, Result};
 use std::{ffi::OsStr, path::Path};
 pub use txt::TxtWriter;
+#[cfg(feature = "vtk")]
 pub use vtk::VtkWriter;
 pub use xyz::XyzWriter;
 pub use yml::YamlWriter;
@@ -53,18 +55,38 @@ pub trait OutputWriter {
 }
 
 impl dyn OutputWriter {
-    /// Creates a new output writer from a file extension. Supported extensions are:
-    /// `txt`, `xyz`, `vtk` (as `vtu`)
+    /// Creates a new output writer from a file extension. The extension passed
+    /// as argument is case-insensitive and does not include the leading dot.
+    /// 
+    /// The supported extensions are:
+    ///
+    /// - Text Files `.txt`
+    /// - XYZ Files `.xyz`
+    #[cfg_attr(feature = "vtk", doc = "- VTK Files `.vtk` or `.vtu`")]
+    /// - YAML Files `.yml` or `.yaml`
     pub fn from_extension(extension: &str) -> Result<Box<dyn OutputWriter>> {
-        match extension.to_ascii_lowercase().as_str() {
-            "txt" | "text" => Ok(Box::new(TxtWriter::default())),
-            "xyz" => Ok(Box::new(XyzWriter::default())),
-            "vtk" | "vtu" => Ok(Box::new(VtkWriter::default())),
-            "yml" | "yaml" => Ok(Box::new(YamlWriter::default())),
-            f => Err(Error::new(
-                InvalidInput,
-                format!("Unsupported file extension: `{f}`"),
-            )),
+        let ext = extension.to_ascii_lowercase();
+
+        if matches!(ext.as_ref(), "txt" | "text") {
+            return Ok(Box::new(TxtWriter::default()));
         }
+
+        if matches!(ext.as_ref(), "xyz") {
+            return Ok(Box::new(XyzWriter::default()));
+        }
+
+        #[cfg(feature = "vtk")]
+        if matches!(ext.as_ref(), "vtk" | "vtu") {
+            return Ok(Box::new(VtkWriter::default()));
+        }
+
+        if matches!(ext.as_ref(), "yml" | "yaml") {
+            return Ok(Box::new(YamlWriter::default()));
+        }
+
+        Err(Error::new(
+            InvalidInput,
+            format!("Unsupported file extension: `{ext}`"),
+        ))
     }
 }

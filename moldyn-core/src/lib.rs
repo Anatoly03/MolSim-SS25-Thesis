@@ -1,7 +1,10 @@
 //! The main crateof the molecular dynamics simulation. This library exposes the
 //! main components of the simulation.
 //! 
+//! # Features
 //! 
+//! - `vtk`: Integrates VTK-support as well as writing `.vtu` output formats. This
+//!   feature is enabled by default.
 #![crate_name = "moldyn_core"]
 
 mod forces;
