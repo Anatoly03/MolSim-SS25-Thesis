@@ -1,9 +1,15 @@
 \documentclass[aspectratio=169]{beamer}
 \usepackage{babel}
-
 \usepackage{array, colortbl, transparent, listings}
 \usepackage[export]{adjustbox}
 \usepackage[skins,theorems]{tcolorbox}
+\usepackage[
+  backend=biber,
+  style=verbose-ibid,
+  citetracker=true,
+  ibidtracker=constrict,
+  autocite=footnote
+]{biblatex}
  
 \setbeamercovered{transparent}
 \lstdefinelanguage{Rust}{
@@ -29,22 +35,23 @@
     morekeywords={Result, Option, Ok, Err, Some, None, panic},
     breaklines=true
 }
+\addbibresource{Reference.bib}
 
 \title{Rust vs C++: Brief Introduction}
 \author{Anatoly Weinstein}
 \date{30th of April 2025}
 
-\newcommand{\framebackground}[2]{
+\newcommand{\framebackground}[3]{
     \begin{tikzpicture}
         \transparent{#1}
         \node[inner sep=0] at (current page.center) {
             \includegraphics[height=\paperheight, right]{./media/tum-uhrenturm.png}
         };
-        \transparent{1}
+        \transparent{#2}
         \node[anchor=south, text width=\paperwidth, text height=1.5cm, draw=none, align=center] at (current page.south) {
             \insertpagenumber
         };
-        \transparent{#2}
+        \transparent{#3}
         \node[anchor=south, text width=\paperwidth, text height=1.5cm, draw=none, align=right] at (current page.south) {
             \small Anatoly W. \,\,
         };
@@ -53,13 +60,19 @@
 
 \newcommand{\headerframe}{
     \usebackgroundtemplate{
-        \framebackground{0.2}{1}
+        \framebackground{0.2}{1}{1}
     }
 }
 
 \newcommand{\simpleframe}{
     \usebackgroundtemplate{
-        \framebackground{0}{1}
+        \framebackground{0}{1}{1}
+    }
+}
+
+\newcommand{\nofooterframe}{
+    \usebackgroundtemplate{
+        \framebackground{0}{0}{1}
     }
 }
 
@@ -73,7 +86,7 @@
 %
 % Frame
 %
-\usebackgroundtemplate{\framebackground{0.2}{0}}
+\usebackgroundtemplate{\framebackground{0.2}{0}{0}}
 \begin{frame}
     \maketitle
 \end{frame}
@@ -93,7 +106,7 @@
     \end{tabular}
 \end{frame}
 
-\simpleframe\begin{frame}{Primitive Data Types}
+\nofooterframe\begin{frame}{Primitive Data Types}
     \begin{tabular}{ m{0.46\textwidth} | m{0.46\textwidth} } 
         \textbf{Rust} & \textbf{C++} \\
         \hline
@@ -105,10 +118,6 @@
         \hline
     \end{tabular}
     \vspace{0.5em}
-
-    % TODO add citation: https://stackoverflow.com/questions/131803/unsigned-int-vs-size-t
-    % TODO add citation: https://doc.rust-lang.org/std/primitive.usize.html
-    % TODO add citation: https://doc.rust-lang.org/core/ffi/type.c_size_t.html
 
     \gray{Note: \texttt{usize} (Rust) and \texttt{size\_t} (C++) are false friends. They are technically similar but different in compiler guarantees.}
 
@@ -202,6 +211,14 @@ match file.open("hello.txt") {
     \vspace{1em}
 
     If a program encounters an \blue{unrecoverable error}, you \blue{panic}. This is equivalent to throwing an error which unwinds back to the main function, only calling destructor logic on the way.
+\end{frame}
+
+\nofooterframe\begin{frame}{Error Handling}{An Example from Production Code}
+    On 18 November 2025, Cloudflare's network began experiencing significant failures to deliver core network traffic. It was triggered by a database systems' permission change, which caused the DB to write to a `feature file' multiple times, exceeding a size limit.\footcite{cloudflare-outage}.
+
+    \vspace{1em}
+    \centering
+    \includegraphics[width=0.8\textwidth]{media/cloudflare-outage.png}
 \end{frame}
 
 \simpleframe\begin{frame}[fragile]{Frame Program}
@@ -334,6 +351,10 @@ particles:
     % image from:
     % https://en.wikipedia.org/wiki/List_of_computing_mascots
     \includegraphics[width=0.5\textwidth]{media/ferris.png}
+\end{frame}
+
+\simpleframe\begin{frame}[allowframebreaks]{References}
+  \printbibliography
 \end{frame}
 
 \end{document}

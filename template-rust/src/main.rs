@@ -15,6 +15,16 @@
 //! - [cargo clippy](https://doc.rust-lang.org/nightly/cargo/commands/cargo-clippy.html)
 //! - [cargo fmt](https://doc.rust-lang.org/nightly/cargo/commands/cargo-fmt.html)
 //! - [cargo run](https://doc.rust-lang.org/nightly/cargo/commands/cargo-run.html)
+//! 
+//! This crate has the feature `vtk` which you can enable to generate
+//! [VTK] (https://en.wikipedia.org/wiki/VTK) output files instead of XYZ files.
+//! You can enable it by adding `--features vtk` to the cargo commands or by
+//! changing line 9 in `Cargo.toml` to include the feature.
+//! 
+//! ```diff
+//! - default = []
+//! + default = ["vtk"]
+//! ```
 
 mod file_reader;
 mod output_writer;

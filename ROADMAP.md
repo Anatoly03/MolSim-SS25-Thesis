@@ -47,3 +47,6 @@ simulation consists of the following steps:
 - [ ] Profilers
   - https://nnethercote.github.io/perf-book/profiling.html
   - https://valgrind.org/docs/manual/cg-manual.html
+
+- [ ] Benchmarking
+  - https://nnethercote.github.io/perf-book/benchmarking.html
