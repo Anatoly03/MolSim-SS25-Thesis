@@ -280,6 +280,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "moldyn-core",
+ "moldyn-io",
 ]
 
 [[package]]
@@ -287,6 +288,15 @@ name = "moldyn-core"
 version = "0.1.0"
 dependencies = [
  "meval",
+ "serde",
+]
+
+[[package]]
+name = "moldyn-io"
+version = "0.1.0"
+dependencies = [
+ "meval",
+ "moldyn-core",
  "serde",
  "serde_yaml",
  "vtkio",

@@ -1,10 +1,8 @@
 //! TODO document
 
-mod args;
 mod entry;
 
-use crate::{Force, simulation::Simulation};
-pub use args::SimulationArgs;
+use moldyn_core::{Force, Simulation, SimulationArgs};
 pub use entry::ParticleLike;
 use serde::{Deserialize, Serialize};
 use std::{

@@ -2,7 +2,8 @@
 //! implementation used only to verify the capacity of the program to write
 //! output files and is deprecated for future use.
 
-use crate::{OutputWriter, Simulation};
+use super::OutputWriter;
+use moldyn_core::Simulation;
 use std::io::{BufWriter, Write};
 
 /// A simple text writer for the simulation data.

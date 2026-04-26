@@ -7,7 +7,7 @@ mod xyz;
 #[cfg(feature = "yaml")]
 mod yml;
 
-use crate::Simulation;
+use moldyn_core::Simulation;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::io::{Error, ErrorKind::InvalidInput, Result};

@@ -6,5 +6,6 @@ This project implements molecular dynamics simulations in C++ and Rust. The goal
 
 - [`moldyn-core`](./moldyn-core/src/): Library Workspace
 - [`moldyn-cli`](./moldyn-cli/src/): Executable Workspace
+- [`moldyn-io`](./moldyn-io/src/): Library File System Bindings
 - [`template-cpp`](./template-cpp/): Copy of original Molecular Dynamics template
 - [`template-rust`](./template-rust/): Rewrite of template codebase in Rust

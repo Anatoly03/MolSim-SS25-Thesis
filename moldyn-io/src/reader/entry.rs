@@ -26,7 +26,7 @@
 //!   - brownian_sigma: b
 //! ```
 
-use crate::{Particle, Vec3};
+use moldyn_core::{Particle, Vec3};
 use meval::Expr;
 use serde::{Deserialize, Serialize};
 

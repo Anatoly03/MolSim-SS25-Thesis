@@ -1,6 +1,6 @@
 //! TODO document
 
-use crate::reader::SimulationArgs;
+use crate::SimulationArgs;
 use crate::{Force, LennardJonesForce};
 use crate::{Particle, simulation::Simulation};
 use std::sync::Arc;

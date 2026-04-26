@@ -1,8 +1,10 @@
 //! TODO document
 
+mod args;
 mod sum;
 
-use crate::{Force, Particle, reader::SimulationArgs};
+use crate::{Force, Particle};
+pub use args::SimulationArgs;
 use serde::{Deserialize, Serialize, de::Visitor};
 use std::sync::Arc;
 pub use sum::DirectSum;
