@@ -1,16 +1,10 @@
 \documentclass[aspectratio=169]{beamer}
 \usepackage{babel}
-\usepackage{array, colortbl, transparent, listings}
+\usepackage{array, colortbl, tikz, transparent, listings}
 \usepackage[export]{adjustbox}
 \usepackage[skins,theorems]{tcolorbox}
-\usepackage[
-  backend=biber,
-  style=verbose-ibid,
-  citetracker=true,
-  ibidtracker=constrict,
-  autocite=footnote
-]{biblatex}
- 
+\usepackage[backend=biber,style=verbose-ibid,citetracker=true,ibidtracker=constrict,autocite=footnote]{biblatex}
+
 \setbeamercovered{transparent}
 \lstdefinelanguage{Rust}{
     sensitive=true,
@@ -35,6 +29,7 @@
     morekeywords={Result, Option, Ok, Err, Some, None, panic},
     breaklines=true
 }
+\usetikzlibrary{automata,positioning}
 \addbibresource{Reference.bib}
 
 \title{Rust vs C++: Brief Introduction}
@@ -114,33 +109,37 @@
         \texttt{f32}, \texttt{f64} & \texttt{float}, \texttt{double} \\
         %  \texttt{usize} & \texttt{size\_t} \\
         \texttt{usize}, \texttt{isize} & \texttt{unsigned long int}, \texttt{long int} \\
-        \texttt{usize}, \gray{\texttt{std::core::c\_size\_t}} & \texttt{size\_t} \\
-        \hline
-    \end{tabular}
-    \vspace{0.5em}
+        % \texttt{usize}, \gray{\texttt{std::core::c\_size\_t}} & \texttt{size\_t} \\
+    %     \hline
+    % \end{tabular}
+    % \vspace{0.5em}
 
-    \gray{Note: \texttt{usize} (Rust) and \texttt{size\_t} (C++) are false friends. They are technically similar but different in compiler guarantees.}
-
-    \vspace{0.5em}
-    \begin{tabular}{ m{0.46\textwidth} | m{0.46\textwidth} } 
-        \hline
+    % \vspace{0.5em}
+    % \begin{tabular}{ m{0.46\textwidth} | m{0.46\textwidth} } 
+    %     \hline
         \texttt{bool} & \texttt{bool} \\
         \texttt{u8} & \texttt{char} \\
-        \hline
+        \texttt{()} & \texttt{void} \\
+        % \hline
     \end{tabular}
-    \vspace{0.5em}
+    \vspace{1em}
 
-    % TODO add citation: https://en.cppreference.com/cpp/language/types
-    % TODO add citation: https://doc.rust-lang.org/std/primitive.char.html
-    \gray{Note: \texttt{char} (Rust) is unicode-aware and not limited to 8 bit ASCII characters.}
+    We refer to the void type as `unit'.
+
+    % citation: https://en.cppreference.com/cpp/language/types
+    % citation: https://doc.rust-lang.org/std/primitive.char.html
+    \gray{Note: \texttt{char} in Rust is unicode-aware and not limited to 1 byte (8 bit) ASCII characters like \texttt{char} in C++.}
+
+    \gray{Also, \texttt{usize} (in Rust) and \texttt{size\_t} (C++) are false friends. They are technically equivalent but different in compiler guarantees.}
 \end{frame}
 
-\simpleframe\begin{frame}[fragile]{Enums and Variants}
-    % TODO quote: https://ocaml.org/docs/basic-data-types#variants
-    % TODO quote: https://en.cppreference.com/cpp/language/enum
+\simpleframe\begin{frame}[fragile]{Enums and Variants}{Definition}
+    % quote: https://ocaml.org/docs/basic-data-types#variants
+    % quote: https://en.cppreference.com/cpp/language/enum
 
     Rust uses OCaml-like enums which are more powerful than C++ enums in that every variant can branch with data.
 
+    \vspace{1em}
     \begin{columns}[T,onlytextwidth]
         \begin{column}{0.48\textwidth}
             \begin{lstlisting}[aboveskip=0pt,belowskip=0pt,breaklines=false]
@@ -148,6 +147,10 @@ pub enum Option<T> {
     Some(T),
     None,
 }
+
+let mut a
+    = Some(7);
+a = None;
             \end{lstlisting}
         \end{column}
         \begin{column}{0.48\textwidth}
@@ -156,29 +159,44 @@ pub enum Result<T, E> {
     Ok(T),
     Err(E),
 }
+
+let mut c: Result<(), String>
+    = Ok(());
+c = Err("troubles".to_string());
             \end{lstlisting}
         \end{column}
         
     \end{columns}
     \vspace{0.5em}
+\end{frame}
 
+\simpleframe\begin{frame}[fragile]{Enums and Variants}{Pattern Matching}
     This feature becomes powerful with pattern matching, which allows Rust to encode `branching' into the data type, setting a design choice for error handling.
 
+    \vspace{0.5em}
     \begin{columns}[T,onlytextwidth]
         \begin{column}{0.48\textwidth}
             \begin{lstlisting}[aboveskip=0pt,belowskip=0pt,breaklines=false]
-if let Some(value) = ... {
-    // value is of type T
-    ...
+let value = Some(7);
+
+let exists = match value {
+    Some(_) => true,
+    None => false,
 }
+
+// exists == true
             \end{lstlisting}
         \end{column}
         \begin{column}{0.48\textwidth}
             \begin{lstlisting}[aboveskip=0pt,belowskip=0pt,breaklines=false]
-match file.open("hello.txt") {
-    Ok(file) => file,
-    Err(e) => ...,
+let hello = fs::open("hello.txt");
+
+let file = match hello {
+    Ok(f) => f,
+    Err(e) => return Err(e),
 }
+
+// either `file' is here or exit
             \end{lstlisting}
         \end{column}
     \end{columns}
@@ -194,14 +212,17 @@ match file.open("hello.txt") {
     \end{tabular}
     \vspace{1em}
 
-    Rust does not have stack-unwinding exceptions which can be `caught' and handled at runtime. There are two types of error handlers in Rust:
+    Rust does not have stack-unwinding exceptions which can be `caught' and handled at runtime. Instead, there are two types of error handling possibilities in Rust:
 
     \vspace{1em}
     \begin{tabular}{ m{0.46\textwidth} | m{0.46\textwidth} } 
         \hline
         \textbf{Recoverable} & \textbf{Unrecoverable} \\
         \hline
-        \texttt{Result<T, E>} & \texttt{panic \!("this is very very bad");} \\
+        \vspace{0.5em}
+        \texttt{fn handle() -> Result<T, E>} &
+        \vspace{0.5em}
+        \texttt{panic \!("this is very very bad");} \\
         % {\begin{itemize}
         %     \item \texttt{Ok(T)}: the operation succeeded and returned a value of type \texttt{T}.
         %     \item \texttt{Err(E)}: the operation failed and returned an error of type \texttt{E}.
@@ -221,14 +242,12 @@ match file.open("hello.txt") {
     \includegraphics[width=0.8\textwidth]{media/cloudflare-outage.png}
 \end{frame}
 
-\simpleframe\begin{frame}[fragile]{Frame Program}
-    % TODO cite: https://docs.rs/clap/latest/clap/
-
+\nofooterframe\begin{frame}[t, fragile]{Frame Program}
     \begin{itemize}
-        \item Typically done with \blue{clap}
+        \item Typically done with \blue{clap}\footcite{rust-clap}
         \item Utilizes macros to generate code for parsing command line arguments (You do not implement the \texttt{getopt} loop yourself!)
     \end{itemize}
-    \vspace{1em}
+    \vspace{0.5em}
 
     \begin{lstlisting}[aboveskip=0pt,belowskip=0pt,breaklines=false]
 /// Documentation comments become `printHelp' equivalent.
@@ -243,14 +262,12 @@ struct Args {
 
 \end{frame}
 
-\simpleframe\begin{frame}[fragile]{Serialization and Deserialization}
-    % TODO cite: https://docs.rs/clap/latest/clap/
-
+\nofooterframe\begin{frame}[t, fragile]{Serialization and Deserialization}
     \begin{itemize}
-        \item Typically done with \blue{serde} and \blue{serde\_json} (or \blue{serde\_yaml}, ...)
+        \item Typically done with \blue{serde}\footcite{rust-serde} and \blue{serde\_json}\footcite{rust-serde-json} (or \blue{serde\_yaml}, ...)
         \item \blue{serde} maps Rust data structures to an internal format, then \blue{serde\_json} and \blue{serde\_yaml} define interpretations for serialization and deserialization into the respective data format.
     \end{itemize}
-    \vspace{1em}
+    \vspace{0.5em}
 
     \begin{lstlisting}[aboveskip=0pt,belowskip=0pt,breaklines=false]
 /// Documentation comments become `printHelp' equivalent.
@@ -265,40 +282,177 @@ struct Particle {
 
 \end{frame}
 
-\simpleframe\begin{frame}[fragile]{Rust Ownership Model}{The so-to-say 'first big boss' to beginners}
-    % TODO cite https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html
-    TODO refactor slides to be less verbose
+\nofooterframe\begin{frame}[t, fragile]{Rust Ownership Model}{The so-to-say 'first big boss' to beginners}
+    \centering
+    \begin{tikzpicture}[node distance=1cm and 1cm, minimum height=1cm, minimum width=3cm]
+        \node[draw, rectangle] (owned) {Owned};
+        \node[draw, rectangle, gray!30, right=of owned] (mutborrow) {\gray{\texttt{\&mut}}};
+        \node[draw, rectangle, gray!30, right=of mutborrow] (borrow) {\gray{\texttt{\&}}};
+
+        \draw[->, gray!30, thick] (owned) -- (mutborrow) node[midway, above] {};
+        \draw[->, gray!30, thick] (mutborrow) -- (borrow) node[midway, above] {};
+        \draw[->, gray!30, thick] (mutborrow) to[bend left = 10] (borrow) node[midway, above] {};
+        \draw[->, gray!30, thick] (mutborrow) to[bend right = 10] (borrow) node[midway, above] {};
+        \draw[->, gray!30, thick] (owned) to[bend left = 15] (borrow) node[midway, above] {};
+    \end{tikzpicture}
+
+    % \vspace{1em}
+    % \begin{itemize}
+    %     \item Only owned values can be dropped. \gray{Intuitively, you cannot destroy items you lend from the library.}
+    %     \item When an owned value goes out of scope, it is automatically dropped. \gray{Intuitively, if you lose a pen, it is gone.}
+    %     \item Only one mutable borrow can exist at a time. A mutable borrow blocks other borrows. \gray{Intuitively, you should not lend a book to two editors at the same time.}
+    %     \item Multiple immutable borrows can exists at a time. \gray {Intuitively, you can give a book to many readers simultaneously.}
+    % \end{itemize}
 
     \vspace{1em}
     \begin{itemize}
-        \item Only owned values can be dropped. \gray{Intuitively, you cannot destroy items you lend from the library.}
-        \item When an owned value goes out of scope, it is automatically dropped. \gray{Intuitively, if you lose a pen, it is gone.}
-        \item Only one mutable borrow can exist at a time. A mutable borrow blocks other borrows. \gray{Intuitively, you should not lend a book to two editors at the same time.}
-        \item Multiple immutable borrows can exists at a time. \gray {Intuitively, you can give a book to many readers simultaneously.}
+        \item Each value in Rust has an owner.
+        \item There can only be one owner at a time.
+        \item When the owner goes out of scope, the value will be dropped.\footcite{rust-ownership}
     \end{itemize}
+
+    \vspace{0.5em}
+    \gray{Opened files (and streams in general) close in the destructor logic making it impossible to forget to close files (or streams).}
+\end{frame}
+
+\simpleframe\begin{frame}[t, fragile]{Rust Ownership Model}{The so-to-say 'first big boss' to beginners}
+    \centering
+    \begin{tikzpicture}[node distance=1cm and 1cm, minimum height=1cm, minimum width=3cm]
+        \node[draw, rectangle] (owned) {Owned};
+        \node[draw, rectangle, right=of owned] (mutborrow) {\texttt{\&mut}};
+        \node[draw, rectangle, gray!30, right=of mutborrow] (borrow) {\gray{\texttt{\&}}};
+
+        \draw[->, thick] (owned) -- (mutborrow) node[midway, above] {};
+        \draw[->, gray!30, thick] (mutborrow) -- (borrow) node[midway, above] {};
+        \draw[->, gray!30, thick] (mutborrow) to[bend left = 10] (borrow) node[midway, above] {};
+        \draw[->, gray!30, thick] (mutborrow) to[bend right = 10] (borrow) node[midway, above] {};
+        \draw[->, gray!30, thick] (owned) to[bend left = 15] (borrow) node[midway, above] {};
+    \end{tikzpicture}
+
+    \vspace{1em}
+    \begin{itemize}
+        \item You can take a reference mutably of a value.
+        \item There can only be one mutable reference at a time. A mutable reference blocks other references to the value.
+    \end{itemize}
+    
+    \vspace{0.5em}
+    \begin{columns}[T,onlytextwidth]
+        \begin{column}{0.48\textwidth}
+            \centering\textbf{Not Allowed}
+            \begin{lstlisting}[aboveskip=0pt,belowskip=0pt,breaklines=false]
+let mut s = String::from("Hi!");
+
+let r1 = &mut s; // &mut s
+let r2 = &mut s; // &mut s
+
+println!("{r1} {r2}"); // &r1
+            \end{lstlisting}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering\textbf{Allowed}
+            \begin{lstlisting}[aboveskip=0pt,belowskip=0pt,breaklines=false]
+let mut s = String::from("Hi!");
+
+let mut r1 = &mut s; // &mut s
+let r2 = &mut r1; // &mut r1
+
+println!("{r2} {r2}"); // &r1, &r2
+            \end{lstlisting}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\simpleframe\begin{frame}[t, fragile]{Rust Ownership Model}{The so-to-say 'first big boss' to beginners}
+    \begin{center}
+        \begin{tikzpicture}[node distance=1cm and 1cm, minimum height=1cm, minimum width=3cm]
+            \node[draw, rectangle] (owned) {Owned};
+            \node[draw, rectangle, right=of owned] (mutborrow) {\texttt{\&mut}};
+            \node[draw, rectangle, right=of mutborrow] (borrow) {\texttt{\&}};
+    
+            \draw[->, thick] (owned) -- (mutborrow) node[midway, above] {};
+            \draw[->, thick] (mutborrow) -- (borrow) node[midway, above] {};
+            \draw[->, thick] (mutborrow) to[bend left = 10] (borrow) node[midway, above] {};
+            \draw[->, thick] (mutborrow) to[bend right = 10] (borrow) node[midway, above] {};
+            \draw[->, thick] (owned) to[bend left = 15] (borrow) node[midway, above] {};
+        \end{tikzpicture}
+    \end{center}
+
+    \begin{itemize}
+        \item You can take multiple immutable references of a value.
+        \item While there is at least one immutable reference, the value cannot be mutated.
+    \end{itemize}
+
+    \vspace{1em}
+    \blue{Intuition:} If you own a book, you can lend it (\blue{borrow}), write to it (\blue{mutate}), or throw it away (\blue{drop}).
+    If you lend it to someone, you usually do not want the person to write in the book or throw the book away.
+    
+    But if you are fine with it, you \emph{explicitly} tell the person that they can write in the book (\blue{mutable borrow}).
+    Only one person can logically write in the book, and if you lend the book, it's not going to be you.
 \end{frame}
 
 \simpleframe\begin{frame}[fragile]{Rust Ownership Model}{Cheatsheet}
 
-    \vspace{1em}
-    \begin{tabular}{ | m{0.15\textwidth} | m{0.25\textwidth} | m{0.48\textwidth} | } 
+    \begin{tabular}{ m{0.36\textwidth} | m{0.56\textwidth} } 
+        \textbf{Syntax} & \textbf{Reading} \\
         \hline
-        \textbf{Syntax} & \textbf{Description} & \textbf{Permissions} \\
-        \hline
-        \texttt{a: T} & \blue{owned} & read, create immutable borrow, drop \\ \hline
-        \texttt{mut a: T} & \blue{owned mutably} & read, write, create immutable and mutable borrows, drop \\ \hline
-        \texttt{a: \&T} & \blue{immutable borrow} & read, create immutable references \\ \hline
-        \texttt{a: \&mut T} & \blue{mutable borrow} & read, write, create single mutable reference, create immutable references \\ \hline
+        \texttt{a: T} & \texttt{a} is an \blue{immutable owned} value of type \texttt{T} \\
+        \texttt{mut a: T} & \texttt{a} is a \blue{mutable owned} value of type \texttt{T} \\
+        \texttt{a: \&T} & \texttt{a} is an \blue{immutable reference} to a value of type \texttt{T} \\
+        \texttt{a: \&mut T} & \texttt{a} is a \blue{mutable reference} to a value of type \texttt{T} \\
     \end{tabular}
-    \vspace{1em}
 
-    Other types like \texttt{mut a: \&T} are possible but rarely useful.
+    % \vspace{1em}
+    % \begin{tabular}{ | m{0.15\textwidth} | m{0.25\textwidth} | m{0.48\textwidth} | } 
+    %     \hline
+    %     \textbf{Syntax} & \textbf{Description} & \textbf{Permissions} \\
+    %     \hline
+    %     \texttt{a: T} & \blue{owned} & read, create immutable borrow, drop \\ \hline
+    %     \texttt{mut a: T} & \blue{owned mutably} & read, write, create immutable and mutable borrows, drop \\ \hline
+    %     \texttt{a: \&T} & \blue{immutable borrow} & read, create immutable references \\ \hline
+    %     \texttt{a: \&mut T} & \blue{mutable borrow} & read, write, create single mutable reference, create immutable references \\ \hline
+    % \end{tabular}
+    
+    \vspace{1em}
+    Borrow types like `\texttt{mut a: \&T}' and `\texttt{mut a: \&mut T}' are also possible but less common in practice.
 \end{frame}
 
-\simpleframe\begin{frame}[fragile]{Rust Ownership Model}
+\nofooterframe\begin{frame}[t, fragile]{Rust Ownership Model}{Problems I've Faced (Problem)}
+    I had a problem with the borrow checker when implementing pairwise particle iteration. Take a look at the signature of \texttt{Vec::get\_mut} (simplified and stripped of generics):
 
-    TODO problems i encountered with borrow checker
-    TODO see direct sum implementation and pairwise iteration
+    \begin{lstlisting}[frame=single,breaklines=false]
+/// Returns a mutable reference to a particle element.
+pub fn get_mut(&mut self, index: usize)
+    -> Option<&mut Particle>;
+    \end{lstlisting}
+
+    Since we need to retrieve \blue{two particle references mutably}, and the \texttt{get\_mut} signature claims the entire particle vector mutably, we run into a problem with the borrow checker.
+
+    The solution is to split the particle vector into two non-overlapping slices.\footcite{rust-split-at-mut-unchecked}
+
+    \begin{lstlisting}[frame=single,breaklines=false]
+/// Divides one mutable Particle slice into two at an index.
+pub fn split_at_mut(&mut self, middle: usize)
+    -> (&mut [Particle], &mut [Particle]);
+    \end{lstlisting}
+\end{frame}
+
+\simpleframe\begin{frame}[fragile]{Rust Ownership Model}{Problems I've Faced (Solution)}
+
+    \begin{lstlisting}[frame=single,breaklines=false]
+let count = particles.len();
+
+for i in 0..count {
+    // newtons third law: skip same pairs
+    for j in (i + 1)..count {
+        let (left, right) = particles.split_at_mut(j);
+
+        let particle1 = &mut left[i];
+        let particle2 = &mut right[0];
+
+        // ...
+    }
+}
+    \end{lstlisting}
 \end{frame}
 
 \simpleframe\begin{frame}{Project State}{Halleys' Comet}
@@ -306,8 +460,8 @@ struct Particle {
     \includegraphics[width=\textwidth]{media/hello-particles.png}
 
     \begin{itemize}
-        \item \blue{File Reading}: YAML
-        \item \blue{File Writing}: XYZ, VTK
+        \item \blue{File Reading}: YAML, (JSON)
+        \item \blue{File Writing}: XYZ, VTK, YAML, (JSON)
     \end{itemize}
 \end{frame}
 

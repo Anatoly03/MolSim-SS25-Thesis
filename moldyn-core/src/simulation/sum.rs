@@ -52,8 +52,6 @@ impl Simulation for DirectSum {
                 // [p1,  p2,  p3],[p4,  p5]
                 //       ^^        ^^ avoid borrow issue with split_at_mut
 
-                // TODO document in slides
-
                 f(&mut left[i], &mut right[0]);
             }
         }
