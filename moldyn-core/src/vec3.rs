@@ -2,7 +2,7 @@
 //! dimensional vector.
 //!
 //! See the C++ implementation of the Vec3 class for comparison:
-//! https://github.com/Anatoly03/MolSim-WS25-GroupA/blob/assignment5-local-backup/src/core/math/Vec3.h
+//! <https://github.com/Anatoly03/MolSim-WS25-GroupA/blob/assignment5-local-backup/src/core/math/Vec3.h>
 
 use serde::{Deserialize, Serialize, de::Visitor};
 use std::{
@@ -218,7 +218,7 @@ impl<T: Div<Output = T> + Copy> Div<T> for Vec3<T> {
     ///
     /// # Example
     ///
-    //// ```rust
+    /// ```
     /// use moldyn_core::Vec3;
     /// 
     /// let v: Vec3<f64> = Vec3::new(2.0, 4.0, 6.0);

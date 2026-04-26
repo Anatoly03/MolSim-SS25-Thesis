@@ -72,14 +72,14 @@ impl dyn OutputWriter {
     /// | File Format | Extensions | URL |
     /// | --- | --- | --- |
     /// | Text      | `.txt`, `.text` |
-    /// | XYZ       | `.xyz`          | http://openbabel.org/wiki/XYZ_(format)
+    /// | XYZ       | `.xyz`          | <http://openbabel.org/wiki/XYZ_(format)>
     #[cfg_attr(
         feature = "vtk",
-        doc = " | VTK       | `.vtk`, `.vtu`  | https://en.wikipedia.org/wiki/VTK"
+        doc = " | VTK       | `.vtk`, `.vtu`  | <https://en.wikipedia.org/wiki/VTK>"
     )]
     #[cfg_attr(
         feature = "yaml",
-        doc = " | YAML      | `.yml`, `.yaml` | https://yaml.org/"
+        doc = " | YAML      | `.yml`, `.yaml` | <https://yaml.org>/"
     )]
     pub fn from_extension(extension: &str) -> Result<Box<dyn OutputWriter>> {
         let ext = extension.to_ascii_lowercase();

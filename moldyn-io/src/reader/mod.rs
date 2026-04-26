@@ -105,11 +105,11 @@ impl TryFrom<PathBuf> for FileDefinition {
     /// | --- | --- | --- |
     #[cfg_attr(
         feature = "yaml",
-        doc = " | YAML      | `.yml`, `.yaml` | https://yaml.org/"
+        doc = " | YAML      | `.yml`, `.yaml` | <https://yaml.org/>"
     )]
     #[cfg_attr(
         feature = "json",
-        doc = " | JSON      | `.json`         | https://www.json.org/json-en.html"
+        doc = " | JSON      | `.json`         | <https://www.json.org/json-en.html>"
     )]
     fn try_from(value: PathBuf) -> Result<Self, Self::Error> {
         // determines the file format
