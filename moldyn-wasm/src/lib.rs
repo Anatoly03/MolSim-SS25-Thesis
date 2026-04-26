@@ -1,6 +1,6 @@
 //! This library provides a WebAssembly interface for the molecular dynamics
 //! simulation. Specifically it provides wrappers for the [moldyn_core] module
-//! and exposes them to JavaScript using [wasm_bindgen].
+//! and exposes them to JavaScript using [mod@wasm_bindgen].
 //!
 //! > Currently Not Implemented.
 //!
