@@ -1,0 +1,32 @@
+name: C++ Build & Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_and_test:
+    name: C++ project
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache CMake dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            target/cpp
+          key: ${{ runner.os }}-cmake-${{ hashFiles('**/CMakeLists.txt') }}
+          restore-keys: ${{ runner.os }}-cmake-
+
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+        with:
+          options: |
+            CMAKE_CXX_FLAGS="-fsanitize=address"
+          build-dir: target/cpp
+
+      - name: Run Tests
+        uses: threeal/ctest-action@v1.1.0
+        with:
+          test-dir: target/cpp

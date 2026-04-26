@@ -10,3 +10,18 @@ This project implements molecular dynamics simulations in C++ and Rust. The goal
 - [`moldyn-wasm`](./moldyn-wasm/src/): Molecular Dynamics WebAssembly Bindings
 - [`template-cpp`](./template-cpp/): Copy of original Molecular Dynamics template
 - [`template-rust`](./template-rust/): Rewrite of template codebase in Rust
+
+# Building & Running Rust
+
+```
+cargo build --release
+./target/release/moldyn-cli --help
+```
+
+# Building & Running C++
+
+```sh
+cmake . -B target/cpp
+make -C target/cpp  -j4 --no-print-directory
+./target/cpp/MolSim --help
+```
