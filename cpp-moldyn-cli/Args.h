@@ -339,7 +339,7 @@ public:
      *     int int_arg;
      *
      *     Args()
-     *         .required<int>(&int_arg, "This is an integer argument.")
+     *         .required_details<int>(&int_arg, "This is an integer argument.")
      *         .parse(argc, argv);
      * }
      * ```
@@ -402,7 +402,7 @@ public:
      *     int int_arg;
      *
      *     Args()
-     *         .required<int>('i', &int_arg, "This is an integer argument.")
+     *         .required_details<int>('i', &int_arg, "This is an integer argument.")
      *         .parse(argc, argv);
      * }
      * ```
@@ -438,7 +438,7 @@ public:
      * ```
      */
     template <typename T>
-    Args &required(char short_name, char *long_name, T *value)
+    Args &required(char short_name, const char *long_name, T *value)
     {
         optstring += short_name;
         optstring += ':';
@@ -462,19 +462,190 @@ public:
      *     int int_arg;
      *
      *     Args()
-     *         .required<int>('i', "integer", &int_arg, "This is an integer argument.")
+     *         .required_details<int>('i', "integer", &int_arg, "This is an integer argument.")
      *         .parse(argc, argv);
      * }
      * ```
      */
     template <typename T>
-    Args &required_details(char short_name, char *long_name, T *value, const char *details)
+    Args &required_details(char short_name, const char *long_name, T *value, const char *details)
     {
         optstring += short_name;
         optstring += ':';
 
         options.push_back(option{long_name, required_argument, nullptr, short_name});
         references.insert({short_name, ArgsRef::with_brief<T>(value, details)});
+        return *this;
+    }
+
+    /**
+     * @brief Registers an optional positional argument with a reference.
+     * @tparam T The type of the argument value.
+     *
+     * # Example
+     *
+     * ```cpp
+     * #include <optional>
+     *
+     * // @brief Accepts the command `./app [<int_arg>]`
+     * int main(int argc, char* argv[]) {
+     *     std::optional<int> int_arg;
+     *
+     *     Args()
+     *         .optional<int>(&int_arg)
+     *         .parse(argc, argv);
+     * }
+     * ```
+     */
+    template <typename T>
+    Args &optional(std::optional<T> *value)
+    {
+        max_positional_arguments += 1;
+        positional_references.push_back(ArgsRef::with<std::optional<T>>(value));
+        return *this;
+    }
+
+    /**
+     * @brief Registers an optional positional argument with a brief details message.
+     * @tparam T The type of the argument value.
+     *
+     * # Example
+     *
+     * ```cpp
+     * #include <optional>
+     *
+     * // @brief Accepts the command `./app [<int_arg>]`
+     * int main(int argc, char* argv[]) {
+     *     std::optional<int> int_arg;
+     *
+     *     Args()
+     *         .optional_details<int>(&int_arg, "This is an integer argument.")
+     *         .parse(argc, argv);
+     * }
+     * ```
+     */
+    template <typename T>
+    Args &optional_details(std::optional<T> *value, const char *details)
+    {
+        max_positional_arguments += 1;
+        positional_references.push_back(ArgsRef::with_brief<std::optional<T>>(value, details));
+        return *this;
+    }
+
+    /**
+     * @brief Registers an optional option with a short name and a reference.
+     * @tparam T The type of the argument value.
+     *
+     * # Example
+     *
+     * ```cpp
+     * // @brief Accepts the command `./app [-i <int_arg>]`
+     * int main(int argc, char* argv[]) {
+     *     int int_arg;
+     *
+     *     Args()
+     *         .optional<int>('i', &int_arg)
+     *         .parse(argc, argv);
+     * }
+     * ```
+     */
+    template <typename T>
+    Args &optional(char short_name, std::optional<T> *value)
+    {
+        optstring += short_name;
+        optstring += "::";
+
+        options.push_back(option{nullptr, optional_argument, nullptr, short_name});
+        references.insert({short_name, ArgsRef::with<std::optional<T>>(value)});
+        return *this;
+    }
+
+    /**
+     * @brief Registers an optional option with a short name, a reference and a
+     * brief details message.
+     * @tparam T The type of the argument value.
+     *
+     * # Example
+     *
+     * ```cpp
+     * // @brief Accepts the command `./app [-i <int_arg>]`
+     * int main(int argc, char* argv[]) {
+     *     int int_arg;
+     *
+     *     Args()
+     *         .optional_details<int>('i', &int_arg, "This is an integer argument.")
+     *         .parse(argc, argv);
+     * }
+     * ```
+     */
+    template <typename T>
+    Args &optional_details(char short_name, std::optional<T> *value, const char *details)
+    {
+        optstring += short_name;
+        optstring += "::";
+
+        options.push_back(option{nullptr, optional_argument, nullptr, short_name});
+        references.insert({short_name, ArgsRef::with_brief<std::optional<T>>(value, details)});
+        return *this;
+    }
+
+    /**
+     * @brief Registers an optional option with a short and long name,
+     * and a reference.
+     * @tparam T The type of the argument value.
+     *
+     * # Example
+     *
+     * ```cpp
+     * // @brief Accepts the commands `./app [-i <int_arg>]`
+     * // and `./app [--integer <int_arg>]`
+     * int main(int argc, char* argv[]) {
+     *     int int_arg;
+     *
+     *     Args()
+     *         .optional<int>('i', "integer", &int_arg)
+     *         .parse(argc, argv);
+     * }
+     * ```
+     */
+    template <typename T>
+    Args &optional(char short_name, const char *long_name, std::optional<T> *value)
+    {
+        optstring += short_name;
+        optstring += "::";
+
+        options.push_back(option{long_name, optional_argument, nullptr, short_name});
+        references.insert({short_name, ArgsRef::with<std::optional<T>>(value)});
+        return *this;
+    }
+
+    /**
+     * @brief Registers an optional option with a short name, long name, a
+     * reference and a brief details message.
+     * @tparam T The type of the argument value.
+     *
+     * # Example
+     *
+     * ```cpp
+     * // @brief Accepts the commands `./app [-i <int_arg>]`
+     * // and `./app [--integer <int_arg>]`
+     * int main(int argc, char* argv[]) {
+     *     int int_arg;
+     *
+     *     Args()
+     *         .optional_details<int>('i', "integer", &int_arg, "This is an integer argument.")
+     *         .parse(argc, argv);
+     * }
+     * ```
+     */
+    template <typename T>
+    Args &optional_details(char short_name, const char *long_name, std::optional<T> *value, const char *details)
+    {
+        optstring += short_name;
+        optstring += "::";
+
+        options.push_back(option{long_name, optional_argument, nullptr, short_name});
+        references.insert({short_name, ArgsRef::with_brief<std::optional<T>>(value, details)});
         return *this;
     }
 
@@ -496,11 +667,12 @@ public:
      */
     Args &help(const char *message)
     {
-        optstring.append("h::");
-        options.push_back(option{"help", optional_argument, nullptr, 'h'});
-        references.insert({'h', ArgsRef::with<std::optional<std::string>>(&help_flag)});
+        // optstring.append("h::");
+        // options.push_back(option{"help", optional_argument, nullptr, 'h'});
+        // references.insert({'h', ArgsRef::with<std::optional<std::string>>(&help_flag)});
+        // return *this;
         help_brief = std::string(message);
-        return *this;
+        return optional_details('h', "help", &help_flag, "Prints this help message and exits.");
     }
 
     /**
@@ -521,10 +693,11 @@ public:
      */
     Args &version()
     {
-        optstring.append("v");
-        options.push_back(option{"version", optional_argument, nullptr, 'v'});
-        references.insert({'v', ArgsRef::with<std::optional<std::string>>(&version_flag)});
-        return *this;
+        // optstring.append("v");
+        // options.push_back(option{"version", optional_argument, nullptr, 'v'});
+        // references.insert({'v', ArgsRef::with<std::optional<std::string>>(&version_flag)});
+        // return *this;
+        return optional_details('v', "version", &version_flag, "Prints the application version and exits.");
     }
 
     /**
