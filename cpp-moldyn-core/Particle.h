@@ -6,7 +6,6 @@
 #pragma once
 
 #include <optional>
-
 #include "Vec3.h"
 
 struct Particle
@@ -64,7 +63,7 @@ public:
     /**
      * @brief Returns the current velocity of the particle.
      */
-    inline const Vec3<double> &velocity() const { return velocity; }
+    inline const Vec3<double> &get_velocity() const { return velocity; }
 
     /**
      * @brief Returns the current force of the particle.

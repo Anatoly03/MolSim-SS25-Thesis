@@ -57,3 +57,5 @@ simulation consists of the following steps:
   2. VTU to PNG (https://github.com/phuc/vtu2png)
   3. PNG to VIDEO https://gist.github.com/kydecker/fc82bc34695e4422115ad13afbf5f070
   4. Upload video
+
+- github ci badges: https://github.com/marketplace/actions/ci-badges

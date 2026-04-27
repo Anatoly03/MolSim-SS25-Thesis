@@ -49,7 +49,7 @@ public:
 
     // remove implicit copy constructors
     // https://stackoverflow.com/questions/33776697/deleting-copy-constructors-and-copy-assignment-operators-which-of-them-are-esse
-    Vec3(const Vec3 &) = delete;
+    // Vec3(const Vec3 &) = delete;
     // Vec3 &operator=(const Vec3 &) = delete;
     inline constexpr Vec3 clone() const { return Vec3<T>(x, y, z); }
 
@@ -79,7 +79,7 @@ public:
     {
         if (double length = this->length())
         {
-            return std::optional(*this / length);
+            return std::optional<Vec3>(*this / length);
         }
 
         return std::nullopt;
