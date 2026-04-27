@@ -11,9 +11,9 @@
  */
 int main(int argc, char *argv[])
 {
-    std::cout << "Hello, C++!\n";
-
     Args().help("This is a simple help message.").parse(argc, argv);
+
+    std::cout << "Hello, C++!\n";
 
     return 0;
 }

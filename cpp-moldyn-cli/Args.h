@@ -8,11 +8,13 @@
 #pragma once
 
 #include <getopt.h>
-#include <string>
-#include <vector>
-
-// todo. remove
 #include <iostream>
+#include <map>
+#include <optional>
+#include <set>
+#include <string>
+#include <typeinfo>
+#include <vector>
 
 /**
  * @brief A CLI argument parser inspired by the [argparse](https://github.com/p-ranav/argparse)
@@ -38,19 +40,128 @@
 struct Args
 {
 private:
+    /**
+     * Helper construct to store reference to registered arguments along their
+     * type information for parsing and error handling.
+     */
+    struct ArgsRef
+    {
+    public:
+        const size_t type_hint;
+        const std::string type_name;
+
+    private:
+        void *value;
+        // @brief Did the parser ask for this argument to be read?
+        bool is_set = false;
+
+    public:
+        ArgsRef(size_t type_hint, std::string type_name, void *value)
+            : type_hint(type_hint), type_name(type_name), value(value) {}
+        // type_hint(typeid(P).hash_code()), type_name(typeid(P).name()), value(value)
+
+        template <typename P>
+        static ArgsRef with(P *value)
+        {
+            return ArgsRef(typeid(P).hash_code(), typeid(P).name(), value);
+        }
+
+        template <typename P>
+        P *try_get() const
+        {
+            if (typeid(P).hash_code() == type_hint)
+            {
+                return static_cast<P *>(value);
+            }
+
+            return nullptr;
+        }
+    };
+
+    /**
+     * @brief The string of short options for getopt_long. The string format is
+     * a sequence of characters, followed by a colon if the option requires an
+     * argument, or two colons if the option takes an optional argument.
+     *
+     * @see [getopt](https://www.man7.org/linux/man-pages/man3/getopt.3.html)
+     */
     std::string optstring;
-    std::vector<const option> options;
-    int positional_arguments = 0;
+
+    /**
+     * @brief The vector of long options for command parsing.
+     *
+     * @see [getopt](https://www.man7.org/linux/man-pages/man3/getopt.3.html)
+     */
+    std::vector<option> options;
+
+    /**
+     * @brief An ordered map of option arguments mapped to their outer references.
+     */
+    std::map<char, ArgsRef> references;
+
+    /**
+     * @brief An vector of positional argument mapped to their outer references.
+     */
+    std::vector<ArgsRef> positional_references;
+
+    // @brief Amount of, registered as required, positional arguments.
+    int required_positional_arguments = 0;
+
+    // @brief Internal help argument tag: `--help` or `-h`.
+    std::optional<std::string> help_flag = std::nullopt;
+    // @brief Internal help argument tag: `--version` or `-v`.
+    std::optional<std::string> version_flag = std::nullopt;
 
     /**
      * @brief Prints the help message and exits the application.
      */
     [[noreturn]]
-    void print_help() {
+    void print_help()
+    {
         std::cout << "Help message for the CLI application.\n";
         exit(0);
     }
 
+    /**
+     * @brief Parse single argument with the appropriate type and store in outer
+     * reference.
+     */
+    bool parse_into_ref(char *optarg, const ArgsRef &ref)
+    {
+        // booleans are flags and treated as true if present
+        // TODO support for `-B0` syntax for setting booleans to false
+        if (const auto v = ref.try_get<bool>())
+        {
+            *v = true;
+            return true;
+        }
+
+        if (const auto v = ref.try_get<double>())
+        {
+            *v = atof(optarg);
+            return true;
+        }
+
+        if (const auto v = ref.try_get<int>())
+        {
+            *v = atoi(optarg);
+            return true;
+        }
+
+        if (const auto v = ref.try_get<std::string>())
+        {
+            *v = std::string(optarg);
+            return true;
+        }
+
+        if (const auto v = ref.try_get<std::optional<std::string>>())
+        {
+            *v = std::optional<std::string>(optarg ? optarg : "");
+            return true;
+        }
+
+        return false;
+    }
 
 public:
     /**
@@ -83,9 +194,8 @@ public:
     template <typename T>
     Args &required(T *value)
     {
-        positional_arguments += 1;
-
-        // TODO
+        required_positional_arguments += 1;
+        positional_references.push_back(ArgsRef::with<T>(value));
         return *this;
     }
 
@@ -210,7 +320,12 @@ public:
     template <typename T>
     Args &required(char short_name, char *long_name, T *value, char *details)
     {
-        // TODO
+        // https://stackoverflow.com/questions/1472048/how-to-append-a-char-to-a-stdstring
+        optstring += short_name;
+        optstring += ':';
+
+        options.push_back(option{long_name, required_argument, nullptr, short_name});
+        references.insert({short_name, ArgsRef::with<T>(value)});
         return *this;
     }
 
@@ -230,10 +345,11 @@ public:
      * }
      * ```
      */
-    Args &help(char *message)
+    Args &help(const char *message)
     {
-        optstring += "h:";
+        optstring.append("h::");
         options.push_back(option{"help", optional_argument, nullptr, 'h'});
+        references.insert({'h', ArgsRef::with<std::optional<std::string>>(&help_flag)});
         return *this;
     }
 
@@ -259,10 +375,49 @@ public:
         int opt;
         while ((opt = getopt_long(argc, argv, optstring.c_str(), &options[0], nullptr)) != -1)
         {
-            // TODO options
-            // TODO help
+            for (const auto &option : options)
+            {
+                if (option.val != opt)
+                    continue;
+
+                // parse argument into appropriate type and store in outer reference
+                const auto ref = references.find(opt)->second;
+
+                if (parse_into_ref(optarg, ref))
+                    ;
+                break;
+
+                // We land here if the option type could not be parsed.
+                std::cerr << "Error: Failed to parse argument for option -" << (char)opt << "\n";
+                std::cerr << "Expected type: " << ref.type_name << "\n";
+                std::cerr << "Received value: `" << (optarg ? optarg : "null") << "`\n";
+                exit(1);
+            }
         }
 
-        // TODO positional
+        // if help flag was set, print the help message and exit
+        if (help_flag.has_value())
+        {
+            print_help();
+        }
+
+        // TODO version flag
+
+        // parse positional arguments
+        for (int i = 0; i < required_positional_arguments && optind < argc; i++, optind++)
+        {
+            // parse positional argument into appropriate type and store in outer reference
+            const auto ref = positional_references[i];
+
+            if (parse_into_ref(argv[optind], ref))
+                ;
+            break;
+
+            // We land here if the option type could not be parsed.
+            std::cerr << "Error: Failed to parse argument at position " << i + 1 << "\n";
+            std::cerr << "Expected type: " << ref.type_name << "\n";
+            std::cerr << "Received value: `" << (argv[optind] ? argv[optind] : "null") << "`\n";
+            exit(1);
+        }
     }
 };
