@@ -56,6 +56,7 @@ private:
     {
     public:
         const size_t type_hint;
+        const std::string brief = "";
 
     private:
         const std::string type_name;
@@ -66,12 +67,21 @@ private:
     public:
         ArgsRef(size_t type_hint, std::string type_name, void *value)
             : type_hint(type_hint), type_name(type_name), value(value) {}
+        ArgsRef(size_t type_hint, std::string type_name, void *value, const char *brief)
+            : type_hint(type_hint), type_name(type_name), value(value), brief(brief) {}
+
         // type_hint(typeid(P).hash_code()), type_name(typeid(P).name()), value(value)
 
         template <typename P>
         static ArgsRef with(P *value)
         {
             return ArgsRef(typeid(P).hash_code(), typeid(P).name(), value);
+        }
+
+        template <typename P>
+        static ArgsRef with_brief(P *value, const char *brief)
+        {
+            return ArgsRef(typeid(P).hash_code(), typeid(P).name(), value, brief);
         }
 
         template <typename P>
@@ -178,7 +188,9 @@ private:
             for (const auto refs : positional_references)
             {
                 std::cout << "  arg" << arg_index++
-                          << "\t" << refs.type_human_readable() << "\n";
+                          << "\t\t" << refs.type_human_readable()
+                          << "\t" << refs.brief
+                          << "\n";
             }
         }
 
@@ -191,14 +203,10 @@ private:
                 const auto ref = references.find(option.val)->second;
                 std::cout << "  -" << (char)option.val
                           << ", --" << option.name
-                          << "\t" << ref.type_human_readable() << "\n";
+                          << "\t" << ref.type_human_readable()
+                          << "\t" << ref.brief
+                          << "\n";
             }
-
-            // for (const auto refs : positional_references)
-            // {
-            //     std::cout << "  arg" << (&refs - &positional_references[0] + 1)
-            //               << "\t" << refs.type_human_readable() << "\n";
-            // }
         }
 
         exit(0);
@@ -314,6 +322,7 @@ public:
 
         required_positional_arguments += 1;
         max_positional_arguments += 1;
+
         positional_references.push_back(ArgsRef::with<T>(value));
         return *this;
     }
@@ -338,10 +347,16 @@ public:
     template <typename T>
     Args &required_details(T *value, const char *details)
     {
+        if (required_positional_arguments != positional_references.size())
+        {
+            std::cerr << "Error: Required positional arguments must be registered before optional positional arguments.\n";
+            exit(1);
+        }
+
         required_positional_arguments += 1;
         max_positional_arguments += 1;
-        positional_references.push_back(ArgsRef::with<T>(value));
-        // TODO store details for help message
+
+        positional_references.push_back(ArgsRef::with_brief<T>(value, details));
         return *this;
     }
 
@@ -365,7 +380,12 @@ public:
     template <typename T>
     Args &required(char short_name, T *value)
     {
-        // TODO
+        // https://stackoverflow.com/questions/1472048/how-to-append-a-char-to-a-stdstring
+        optstring += short_name;
+        optstring += ':';
+
+        options.push_back(option{nullptr, required_argument, nullptr, short_name});
+        references.insert({short_name, ArgsRef::with<T>(value)});
         return *this;
     }
 
@@ -390,7 +410,11 @@ public:
     template <typename T>
     Args &required_details(char short_name, T *value, const char *details)
     {
-        // TODO
+        optstring += short_name;
+        optstring += ':';
+
+        options.push_back(option{nullptr, required_argument, nullptr, short_name});
+        references.insert({short_name, ArgsRef::with_brief<T>(value, details)});
         return *this;
     }
 
@@ -416,7 +440,11 @@ public:
     template <typename T>
     Args &required(char short_name, char *long_name, T *value)
     {
-        // TODO
+        optstring += short_name;
+        optstring += ':';
+
+        options.push_back(option{long_name, required_argument, nullptr, short_name});
+        references.insert({short_name, ArgsRef::with<T>(value)});
         return *this;
     }
 
@@ -442,12 +470,11 @@ public:
     template <typename T>
     Args &required_details(char short_name, char *long_name, T *value, const char *details)
     {
-        // https://stackoverflow.com/questions/1472048/how-to-append-a-char-to-a-stdstring
         optstring += short_name;
         optstring += ':';
 
         options.push_back(option{long_name, required_argument, nullptr, short_name});
-        references.insert({short_name, ArgsRef::with<T>(value)});
+        references.insert({short_name, ArgsRef::with_brief<T>(value, details)});
         return *this;
     }
 
