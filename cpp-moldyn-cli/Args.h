@@ -18,6 +18,10 @@
 #include <typeinfo>
 #include <vector>
 
+#ifndef PROGRAM_VERSION
+#define PROGRAM_VERSION "unknown"
+#endif
+
 /**
  * @brief A CLI argument parser inspired by the [argparse](https://github.com/p-ranav/argparse)
  * library for C++.
@@ -137,6 +141,10 @@ private:
 
     // @brief Internal help argument tag: `--help` or `-h`.
     std::optional<std::string> help_flag = std::nullopt;
+
+    // @brief Brief description of the CLI application for the help and usage message.
+    std::optional<std::string> help_brief = std::nullopt;
+
     // @brief Internal help argument tag: `--version` or `-v`.
     std::optional<std::string> version_flag = std::nullopt;
 
@@ -144,9 +152,51 @@ private:
      * @brief Prints the help message and exits the application.
      */
     [[noreturn]]
-    void print_help()
+    void print_help(const char *progname)
     {
-        std::cout << "Help message for the CLI application.\n";
+        if (help_brief.has_value())
+        {
+            std::cout << help_brief.value() << "\n\n";
+        }
+
+        std::cout << "Usage: " << progname << " [OPTIONS]";
+        for (int i = 0; i < required_positional_arguments; i++)
+        {
+            std::cout << " <arg" << i << ">";
+        }
+        std::cout << "\n";
+
+        if (max_positional_arguments)
+        {
+            std::cout << "\nArguments:\n";
+
+            int arg_index = 0;
+            for (const auto refs : positional_references)
+            {
+                std::cout << "  arg" << arg_index++
+                          << "\t" << refs.type_human_readable() << "\n";
+            }
+        }
+
+        if (!options.empty())
+        {
+            std::cout << "\nOptions:\n";
+
+            for (const auto &option : options)
+            {
+                const auto ref = references.find(option.val)->second;
+                std::cout << "  -" << (char)option.val
+                          << ", --" << option.name
+                          << "\t" << ref.type_human_readable() << "\n";
+            }
+
+            // for (const auto refs : positional_references)
+            // {
+            //     std::cout << "  arg" << (&refs - &positional_references[0] + 1)
+            //               << "\t" << refs.type_human_readable() << "\n";
+            // }
+        }
+
         exit(0);
     }
 
@@ -156,7 +206,14 @@ private:
     [[noreturn]]
     void print_usage(const char *progname)
     {
-        std::cout << "Usage: " << progname << " [options]\n";
+        std::cout << "Usage:   " << progname << " [OPTIONS]";
+        for (int i = 0; i < required_positional_arguments; i++)
+        {
+            std::cout << " <arg" << i << ">";
+        }
+        std::cout << "\n";
+        std::cout << "Help:    " << progname << " --help\n";
+        std::cout << "Version: " << progname << " --help\n";
         exit(0);
     }
 
@@ -232,6 +289,12 @@ public:
     template <typename T>
     Args &required(T *value)
     {
+        if (required_positional_arguments != positional_references.size())
+        {
+            std::cerr << "Error: Required positional arguments must be registered before optional positional arguments.\n";
+            exit(1);
+        }
+
         required_positional_arguments += 1;
         max_positional_arguments += 1;
         positional_references.push_back(ArgsRef::with<T>(value));
@@ -392,6 +455,31 @@ public:
         optstring.append("h::");
         options.push_back(option{"help", optional_argument, nullptr, 'h'});
         references.insert({'h', ArgsRef::with<std::optional<std::string>>(&help_flag)});
+        help_brief = std::string(message);
+        return *this;
+    }
+
+    /**
+     * @brief Registers the version message for the CLI application.
+     *
+     * # Example
+     *
+     * ```cpp
+     * // @brief Accepts the command `./app --help` or `./app -h`
+     * int main(int argc, char* argv[]) {
+     *     int int_arg;
+     *
+     *     Args()
+     *         .version()
+     *         .parse(argc, argv);
+     * }
+     * ```
+     */
+    Args &version()
+    {
+        optstring.append("v");
+        options.push_back(option{"version", optional_argument, nullptr, 'v'});
+        references.insert({'v', ArgsRef::with<std::optional<std::string>>(&version_flag)});
         return *this;
     }
 
@@ -446,10 +534,14 @@ public:
         // if help flag was set, print the help message and exit
         if (help_flag.has_value())
         {
-            print_help();
+            print_help(progname);
         }
 
-        // TODO version flag
+        if (version_flag.has_value())
+        {
+            std::cout << progname << " v" << PROGRAM_VERSION << "\n";
+            exit(0);
+        }
 
         // parse positional arguments
         int pos_index = 0;

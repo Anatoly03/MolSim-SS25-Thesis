@@ -20,6 +20,7 @@ target_include_directories(MolSimCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/cpp-mol
 add_executable(MolSim ${CLI_SRC})
 target_link_libraries(MolSim PRIVATE MolSimCore)
 target_include_directories(MolSim PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cpp-moldyn-cli)
+target_compile_definitions(MolSim PRIVATE PROGRAM_VERSION="${CMAKE_PROJECT_VERSION}")
 
 # Executable for the test runner
 add_executable(MolSimTest ${TEST_SRC})
