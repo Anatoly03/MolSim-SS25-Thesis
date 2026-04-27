@@ -11,7 +11,12 @@
  */
 int main(int argc, char *argv[])
 {
-    Args().help("This is a simple help message.").parse(argc, argv);
+    std::string input_path;
+
+    Args()
+        .required_details(&input_path, "The input file for the simulation. The parser will be selected from the file extension.")
+        .help("Molecular Dynamics Thesis Code. This library implements a simple engine to simulate molecular dynamics.")
+        .parse(argc, argv);
 
     std::cout << "Hello, C++!\n";
 

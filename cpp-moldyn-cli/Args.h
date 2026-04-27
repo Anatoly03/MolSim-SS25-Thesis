@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <cxxabi.h>
+#include <cstdlib>
 #include <getopt.h>
 #include <iostream>
 #include <map>
@@ -48,9 +50,9 @@ private:
     {
     public:
         const size_t type_hint;
-        const std::string type_name;
 
     private:
+        const std::string type_name;
         void *value;
         // @brief Did the parser ask for this argument to be read?
         bool is_set = false;
@@ -75,6 +77,29 @@ private:
             }
 
             return nullptr;
+        }
+
+        const std::string type_human_readable() const
+        {
+            if (type_hint == typeid(bool).hash_code())
+                return "bool";
+            if (type_hint == typeid(int).hash_code())
+                return "int";
+            if (type_hint == typeid(double).hash_code())
+                return "double";
+            if (type_hint == typeid(std::string).hash_code())
+                return "std::string";
+            if (type_hint == typeid(std::optional<std::string>).hash_code())
+                return "std::optional<std::string>";
+
+            // https://stackoverflow.com/questions/12877521/human-readable-type-info-name
+            // caller is responsible for freeing the demangled name
+            int status = 0;
+            std::string demangled_name;
+            char *demangled = abi::__cxa_demangle(&type_name[0], nullptr, nullptr, &status);
+            demangled_name = (status == 0 && demangled) ? demangled : type_name;
+            std::free(demangled);
+            return demangled_name;
         }
     };
 
@@ -107,6 +132,9 @@ private:
     // @brief Amount of, registered as required, positional arguments.
     int required_positional_arguments = 0;
 
+    // @brief Amount of, required and optional, positional arguments.
+    int max_positional_arguments = 0;
+
     // @brief Internal help argument tag: `--help` or `-h`.
     std::optional<std::string> help_flag = std::nullopt;
     // @brief Internal help argument tag: `--version` or `-v`.
@@ -119,6 +147,16 @@ private:
     void print_help()
     {
         std::cout << "Help message for the CLI application.\n";
+        exit(0);
+    }
+
+    /**
+     * @brief Prints the help message and exits the application.
+     */
+    [[noreturn]]
+    void print_usage(const char *progname)
+    {
+        std::cout << "Usage: " << progname << " [options]\n";
         exit(0);
     }
 
@@ -195,6 +233,7 @@ public:
     Args &required(T *value)
     {
         required_positional_arguments += 1;
+        max_positional_arguments += 1;
         positional_references.push_back(ArgsRef::with<T>(value));
         return *this;
     }
@@ -217,9 +256,12 @@ public:
      * ```
      */
     template <typename T>
-    Args &required(T *value, char *details)
+    Args &required_details(T *value, const char *details)
     {
-        // TODO
+        required_positional_arguments += 1;
+        max_positional_arguments += 1;
+        positional_references.push_back(ArgsRef::with<T>(value));
+        // TODO store details for help message
         return *this;
     }
 
@@ -266,7 +308,7 @@ public:
      * ```
      */
     template <typename T>
-    Args &required(char short_name, T *value, char *details)
+    Args &required_details(char short_name, T *value, const char *details)
     {
         // TODO
         return *this;
@@ -318,7 +360,7 @@ public:
      * ```
      */
     template <typename T>
-    Args &required(char short_name, char *long_name, T *value, char *details)
+    Args &required_details(char short_name, char *long_name, T *value, const char *details)
     {
         // https://stackoverflow.com/questions/1472048/how-to-append-a-char-to-a-stdstring
         optstring += short_name;
@@ -377,6 +419,12 @@ public:
         {
             for (const auto &option : options)
             {
+                if (opt == '?')
+                {
+                    std::cerr << "Error: Unrecognized option.\n";
+                    print_usage(progname);
+                }
+
                 if (option.val != opt)
                     continue;
 
@@ -388,9 +436,9 @@ public:
                 break;
 
                 // We land here if the option type could not be parsed.
-                std::cerr << "Error: Failed to parse argument for option -" << (char)opt << "\n";
-                std::cerr << "Expected type: " << ref.type_name << "\n";
-                std::cerr << "Received value: `" << (optarg ? optarg : "null") << "`\n";
+                std::cerr << "Error: Failed to parse argument for option -"
+                          << (char)opt << ". expected type: `" << ref.type_human_readable()
+                          << "`. received value: `" << (optarg ? optarg : "null") << "`\n";
                 exit(1);
             }
         }
@@ -404,20 +452,32 @@ public:
         // TODO version flag
 
         // parse positional arguments
-        for (int i = 0; i < required_positional_arguments && optind < argc; i++, optind++)
+        int pos_index = 0;
+        while (optind < argc && pos_index < max_positional_arguments)
         {
             // parse positional argument into appropriate type and store in outer reference
-            const auto ref = positional_references[i];
+            const auto ref = positional_references[pos_index];
 
             if (parse_into_ref(argv[optind], ref))
-                ;
+            {
+                pos_index += 1;
+                optind += 1;
+            }
             break;
 
             // We land here if the option type could not be parsed.
-            std::cerr << "Error: Failed to parse argument at position " << i + 1 << "\n";
-            std::cerr << "Expected type: " << ref.type_name << "\n";
-            std::cerr << "Received value: `" << (argv[optind] ? argv[optind] : "null") << "`\n";
+            std::cerr << "Error: Failed to parse argument at position " << pos_index + 1
+                      << ". expected type: `" << ref.type_human_readable()
+                      << "`. received value: `" << (argv[optind] ? argv[optind] : "null") << "`\n";
             exit(1);
+        }
+
+        if (pos_index < required_positional_arguments)
+        {
+            const auto ref = positional_references[pos_index];
+            std::cerr << "Error: Missing required positional argument at position " << pos_index + 1
+                      << ". Expected type: " << ref.type_human_readable() << "\n";
+            print_usage(progname);
         }
     }
 };
