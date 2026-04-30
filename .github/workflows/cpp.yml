@@ -5,6 +5,7 @@ on:
     paths:
       - cpp-moldyn-cli/**
       - cpp-moldyn-core/**
+      - cpp-moldyn-io/**
       - cpp-moldyn-test/**
   workflow_dispatch:
 

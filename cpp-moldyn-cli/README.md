@@ -4,6 +4,7 @@ This codebase consists of the molecular dynamics C++ project. It's divided into 
 
 - `cpp-moldyn-cli`: C++ Executable Workspace
 - `cpp-moldyn-core`: C++ Library Workspace
+- `cpp-moldyn-io`: C++ File I/O Bindings
 - `cpp-moldyn-test`: C++ Tests
 
 Below is an example how to build the project and print the help message.

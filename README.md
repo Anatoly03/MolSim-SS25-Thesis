@@ -9,10 +9,11 @@ This project implements molecular dynamics simulations in C++ and Rust. The goal
 
 - [`cpp-moldyn-cli`](./cppmoldyn-cli/src/): C++ Executable Workspace
 - [`cpp-moldyn-core`](./cppmoldyn-core/src/): C++ Library Workspace
+- [`cpp-moldyn-io`](./cppmoldyn-io/src/): C++ File System Bindings
 - [`cpp-moldyn-test`](./cppmoldyn-test/src/): C++ Tests
 - [`moldyn-cli`](./moldyn-cli/src/): Rust Executable Workspace
 - [`moldyn-core`](./moldyn-core/src/): Rust Library Workspace
-- [`moldyn-io`](./moldyn-io/src/): Rust Library File System Bindings
+- [`moldyn-io`](./moldyn-io/src/): Rust File System Bindings
 - [`moldyn-wasm`](./moldyn-wasm/src/): Rust Molecular Dynamics WebAssembly Bindings
 - [`template-cpp`](./template-cpp/): C++ Molecular Dynamics template (Copy, Reformatted)
 - [`template-rust`](./template-rust/): Rust Molecular Dynamics template (Rewrite)
