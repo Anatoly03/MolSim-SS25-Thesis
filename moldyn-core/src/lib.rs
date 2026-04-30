@@ -7,7 +7,7 @@
 //! create a direct sum simulation instance with a single particle and run it for 1000
 //! time steps, printing the position of the particle at each step.
 //! 
-//! ```rs
+//! ```
 //! use moldyn_core::{DirectSum, Particle, Simulation};
 //! 
 //! let mut simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
