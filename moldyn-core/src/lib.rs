@@ -8,7 +8,7 @@
 //! time steps, printing the position of the particle at each step.
 //! 
 //! ```
-//! use moldyn_core::{DirectSum, Particle, Simulation};
+//! use moldyn_core::{DirectSum, Particle, Simulation, Vec3};
 //! 
 //! let mut simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
 //! 
