@@ -16,25 +16,55 @@ struct Reader
 {
 private:
     /**
-     * @brief The input file stream for reading particle data. The parser will
-     * be selected from the file extension.
+     * @brief The input file stream for reading particle data. The parser
+     * will be selected from the file extension.
      */
     std::unique_ptr<std::ifstream> input_file;
 
+    // TODO create simulation struct
+    // when reading file, write here
+
 public:
     /**
-     * @brief Initializes a file reader for a given file path without consuming
-     * the file stream. This will shut down the program if the file cannot be opened.
+     * @brief Initializes a file stream for a given file path.
+     * 
+     * @param file_path The path to the input file for the simulation. The
+     * parser will be selected from the file extension.
+     * 
+     * @note This constructor does not consume the file stream. If the file
+     * stream could not be opened, the program will be terminated with an
+     * error message.
+     * 
+     * @example
+     * 
+     * Here is an example of how to construct the Reader struct.
+     * 
+     * ```cpp
+     * Reader reader("input.yaml");
+     * ```
      */
     Reader(std::string file_path) {
         std::unique_ptr<std::ifstream> pointer = std::make_unique<std::ifstream>(file_path);
 
         if (!pointer.get()->is_open())
         {
-            std::cerr << "Error: Failed to open file at path `" << file_path << "`\n";
+            std::cerr << "Error: Could not open file: " << file_path << "\n";
             exit(1);
         }
 
         input_file = std::move(pointer);
     }
+
+    /**
+     * @brief Closes the file stream if it is open upon Reader destructor
+     * invocation.
+     */
+    ~Reader() {
+        if (input_file.get()->is_open())
+        {
+            input_file.get()->close();
+        }
+    }
+
+    // TODO Reader.consume() -> Simulation
 };
