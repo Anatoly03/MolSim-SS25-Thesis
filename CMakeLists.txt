@@ -28,6 +28,7 @@ target_link_libraries(MolSimTest gtest gtest_main MolSimCore)
 target_include_directories(MolSimTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/cpp-moldyn-test)
 
 # CMake Dependency Configurations
+include(doxygen)
 include(test-google)
 
 # https://cmake.org/cmake/help/latest/module/GoogleTest.html
