@@ -568,7 +568,7 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = cpp-moldyn-cli cpp-moldyn-core cpp-moldyn-test
+INPUT                  = cpp-moldyn-cli/README.md cpp-moldyn-cli cpp-moldyn-core cpp-moldyn-test
 
 # Use the README.md file as the main page.
 
