@@ -1,6 +1,35 @@
 //! The main crate of the molecular dynamics simulation. This library exposes the
 //! main components of the simulation.
-//!
+//! 
+//! # Usage
+//! 
+//! Here is a simple example of how to use the library to run a simulation. This will
+//! create a direct sum simulation instance with a single particle and run it for 1000
+//! time steps, printing the position of the particle at each step.
+//! 
+//! ```rs
+//! use moldyn_core::{DirectSum, Particle, Simulation};
+//! 
+//! let mut simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
+//! 
+//! simulation.add_particles(vec![
+//!     Particle::from_data(Vec3::zero(), Vec3::new(1.0, 0.0, 0.0), 1.0),
+//! ]);
+//! 
+//! let mut current_time = 0.0;
+//! let delta_time = 0.01;
+//! let end_time = 10.0;
+//! 
+//! while current_time < end_time {
+//!     simulation.step(delta_time);
+//!     current_time += delta_time;
+//! 
+//!     for particle in simulation.particles() {
+//!         println!("Particle at position: {:?}", particle.get_position());
+//!     }
+//! }
+//! ```
+//! 
 //! # Features
 // //! 
 // //! ### `serde` (default)
