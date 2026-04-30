@@ -38,4 +38,17 @@ Rust benchmarking is currently done on the nightly channel using the macro [`#[b
 
 ## Documentation [![Rust Documentation](https://badges.ws/badge?icon=rust&value=Documentation)](https://anatoly03.github.io/MolSim-SS26-Thesis/moldyn_core/index.html) [![C++ Documentation](https://badges.ws/badge?icon=c%2b%2b&value=Doxygen)](https://anatoly03.github.io/MolSim-SS26-Thesis/cpp/index.html)
 
-You can find a very detailed code documentation generated with Rustdoc for the Rust codebase and Doxygen for the C++ codebase.
+You can find a very detailed code documentation generated with [Rustdoc](https://doc.rust-lang.org/rustdoc/index.html) for the Rust codebase and [Doxygen](https://www.doxygen.nl/index.html) for the C++ codebase. You can build the documentation locally by running the following shell commands.
+
+```sh
+# rust documentation only
+cargo doc --no-deps --workspace
+
+# c++ documentation only
+mkdir target/doc
+doxygen Doxyfile
+
+# rust + c++ documentation together
+cargo doc --no-deps --workspace
+doxygen Doxyfile
+```
