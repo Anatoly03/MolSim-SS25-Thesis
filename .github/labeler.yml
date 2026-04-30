@@ -1,0 +1,10 @@
+cpp:
+  - cpp-moldyn-cli/**
+  - cpp-moldyn-core/**
+  - cpp-moldyn-io/**
+  - cpp-moldyn-test/**
+rust:
+  - rust-moldyn-cli/**
+  - rust-moldyn-core/**
+  - rust-moldyn-io/**
+  - rust-moldyn-wasm/**
