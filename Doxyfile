@@ -38,7 +38,7 @@ PROJECT_NUMBER         =
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = ../../target/doc/
+OUTPUT_DIRECTORY       = target/doc/
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -568,11 +568,11 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT                  = ../../cpp-moldyn-cli/README.md ../../cpp-moldyn-cli ../../cpp-moldyn-core ../../cpp-moldyn-test
+INPUT                  = cpp-moldyn-cli cpp-moldyn-core cpp-moldyn-test
 
 # Use the README.md file as the main page.
 
-USE_MDFILE_AS_MAINPAGE = README.md
+USE_MDFILE_AS_MAINPAGE = cpp-moldyn-cli/README.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is

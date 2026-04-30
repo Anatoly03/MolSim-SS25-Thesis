@@ -46,7 +46,7 @@ jobs:
         run: cargo doc --no-deps --workspace
 
       - name: Generate Documentation (Doxygen)
-        run: make -C target/cpp docs --no-print-directory
+        run: doxygen Doxyfile
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
