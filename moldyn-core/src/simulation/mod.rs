@@ -1,6 +1,7 @@
 //! TODO document
 
 mod args;
+mod cells;
 mod sum;
 
 use crate::{Force, Particle};
@@ -8,6 +9,7 @@ pub use args::SimulationArgs;
 use serde::{Deserialize, Serialize, de::Visitor};
 use std::sync::Arc;
 pub use sum::DirectSum;
+pub use cells::LinkedCells;
 
 // to self: tried to keep dyn-compatibility. following approaches failed:
 // - fn ...(... impl Fn) is technically generic
@@ -30,9 +32,9 @@ pub trait Simulation {
     /// # Usage
     ///
     /// ```
-    /// use moldyn_core::{DirectSum, Simulation};
+    /// use moldyn_core::{DirectSum, Particle, Simulation, Vec3};
     ///
-    /// let simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
+    /// let mut simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
     ///
     /// simulation.add_particles(vec![
     ///     Particle::from_data(Vec3::zero(), Vec3::new(1.0, 0.0, 0.0), 1.0),
@@ -49,7 +51,7 @@ pub trait Simulation {
     /// # Usage
     ///
     /// ```
-    /// use moldyn_core::{DirectSum, Simulation};
+    /// use moldyn_core::{DirectSum, Particle, Simulation, Vec3};
     ///
     /// let mut simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
     ///
@@ -68,7 +70,7 @@ pub trait Simulation {
     /// # Usage
     ///
     /// ```
-    /// use moldyn_core::{DirectSum, Simulation};
+    /// use moldyn_core::{DirectSum, Particle, Simulation, Vec3};
     ///
     /// let mut simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
     ///
