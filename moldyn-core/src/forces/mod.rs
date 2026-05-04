@@ -138,7 +138,7 @@ impl<'de> Visitor<'de> for ForceVisitor {
         match value.to_ascii_lowercase().as_str() {
             "lennardjones" | "lennard-jones" | "lj" => Ok(Box::new(LennardJonesForce::default())),
             "newton" | "gravitational" => Ok(Box::new(NewtonForce::default())),
-            _ => Err(E::custom(format!("Unknown force type: {}", value))),
+            _ => Err(E::custom(format!("Unknown force type: {value}"))),
         }
     }
 
@@ -164,8 +164,7 @@ impl<'de> Visitor<'de> for ForceVisitor {
                 Ok(Box::new(custom))
             }
             _ => Err(A::Error::custom(format!(
-                "Unknown force type: {}",
-                force_type
+                "Unknown force type: {force_type}"
             ))),
         }
     }

@@ -4,8 +4,11 @@
 use crate::{Force, Particle};
 use meval::Expr;
 
+/// A type alias for a callback function that takes two particles and returns an output of type `Output`.
+pub type ParticlePairCallback<Output> = Box<dyn Fn(&Particle, &Particle) -> Output>;
+
 pub struct CustomForce {
-    func: Box<dyn Fn(&Particle, &Particle) -> f64>,
+    func: ParticlePairCallback<f64>,
 }
 
 impl Force for CustomForce {
@@ -19,7 +22,7 @@ impl Force for CustomForce {
 }
 
 impl CustomForce {
-    pub fn new(func: Box<dyn Fn(&Particle, &Particle) -> f64>) -> Self {
+    pub fn new(func: ParticlePairCallback<f64>) -> Self {
         Self { func }
     }
 

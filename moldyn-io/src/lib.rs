@@ -3,7 +3,7 @@
 //! such as reading and writing simulation data.
 //! 
 //! > **NOTE**: Currently, if the `json` and `yaml` features are disabled, this
-//! program is unusable due to not having a default file format for file reading.
+//! > program is unusable due to not having a default file format for file reading.
 //!
 //! # Features
 //!

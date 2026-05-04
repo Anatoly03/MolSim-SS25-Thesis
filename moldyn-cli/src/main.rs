@@ -87,7 +87,7 @@ pub fn main() {
     let input = match FileDefinition::try_from(args.input) {
         Ok(def) => def,
         Err(e) => {
-            eprintln!("Error reading input file: {}", e);
+            eprintln!("Error reading input file: {e}");
             std::process::exit(1);
         }
     };
@@ -100,7 +100,7 @@ pub fn main() {
     match args.output.parent().map(fs::create_dir_all) {
         Some(Ok(())) | None => (),
         Some(Err(e)) => {
-            eprintln!("Error creating output directory: {}", e);
+            eprintln!("Error creating output directory: {e}");
             std::process::exit(1);
         }
     };
@@ -115,7 +115,7 @@ pub fn main() {
         match <dyn OutputWriter>::from_extension(output_extension.to_str().unwrap_or("")) {
             Ok(writer) => writer,
             Err(e) => {
-                eprintln!("Error creating output writer: {}", e);
+                eprintln!("Error creating output writer: {e}");
                 std::process::exit(1);
             }
         };

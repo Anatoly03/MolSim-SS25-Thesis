@@ -55,11 +55,10 @@ impl OutputWriter for YamlWriter {
 # This output format can be re-inserted into the program. See
 # https://en.wikipedia.org/wiki/YAML for file format doku.
 
-name: {}
+name: null
 force: {}
 algorithm: {}
             ",
-            "null".to_string(),
             state.system_name(),
             state.get_force().system_name(),
         )?;
