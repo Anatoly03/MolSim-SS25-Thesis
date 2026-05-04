@@ -34,7 +34,7 @@ pub trait Simulation {
     /// ```
     /// use moldyn_core::{DirectSum, Particle, Simulation, Vec3};
     ///
-    /// let simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
+    /// let mut simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
     ///
     /// simulation.add_particles(vec![
     ///     Particle::from_data(Vec3::zero(), Vec3::new(1.0, 0.0, 0.0), 1.0),
