@@ -26,18 +26,18 @@ pub trait Simulation {
     fn system_name(&self) -> &str;
 
     /// Get the particles in the simulation, returns as a slice.
-    /// 
+    ///
     /// # Usage
-    /// 
+    ///
     /// ```
     /// use moldyn_core::{DirectSum, Simulation};
-    /// 
+    ///
     /// let simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
-    /// 
+    ///
     /// simulation.add_particles(vec![
     ///     Particle::from_data(Vec3::zero(), Vec3::new(1.0, 0.0, 0.0), 1.0),
     /// ]);
-    /// 
+    ///
     /// for particle in simulation.particles() {
     ///     println!("Particle at position: {:?}", particle.get_position());
     /// }
@@ -45,18 +45,18 @@ pub trait Simulation {
     fn particles(&self) -> &[Particle];
 
     /// Get the particles in the simulation, returns as a mutable slice.
-    /// 
+    ///
     /// # Usage
-    /// 
+    ///
     /// ```
     /// use moldyn_core::{DirectSum, Simulation};
-    /// 
+    ///
     /// let mut simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
-    /// 
+    ///
     /// simulation.add_particles(vec![
     ///     Particle::from_data(Vec3::zero(), Vec3::new(1.0, 0.0, 0.0), 1.0),
     /// ]);
-    /// 
+    ///
     /// for particle in simulation.particles_mut() {
     ///     particle.update_position(0.01);
     /// }
@@ -64,14 +64,14 @@ pub trait Simulation {
     fn particles_mut(&mut self) -> &mut [Particle];
 
     /// Invokes a lambda callback for each particle in the simulation.
-    /// 
+    ///
     /// # Usage
-    /// 
+    ///
     /// ```
     /// use moldyn_core::{DirectSum, Simulation};
-    /// 
+    ///
     /// let mut simulation: Box<dyn Simulation> = Box::new(DirectSum::default());
-    /// 
+    ///
     /// simulation.add_particles(vec![
     ///     Particle::from_data(Vec3::zero(), Vec3::new(1.0, 0.0, 0.0), 1.0),
     /// ]);
